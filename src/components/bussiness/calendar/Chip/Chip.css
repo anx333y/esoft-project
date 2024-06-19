@@ -1,0 +1,16 @@
+.calendar-chip, .calendar-chip label {
+	cursor: pointer;
+}
+
+.calendar-chip {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	user-select: none;
+
+	border-radius: 50%;
+}
+
+.calendar-radio {
+	display: none;
+}
