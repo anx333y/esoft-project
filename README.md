@@ -1,30 +1,28 @@
-# React + TypeScript + Vite
+# Проект "Веб-приложения для миграционной службы ТюмГУ" с Frontend и Backend.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Стек:
+* TypeScript
+* Vite
+* React
+* Redux-Toolkit (с RTK Query)
+* React-router-dom
+* React-hook-form
+* MUI/material
+* MUI/x-data-grid
+* Node.js
+* Express
+* Knex
+* JsonWebToken
+* PostgreSQL
 
-Currently, two official plugins are available:
+## Функционал (список будет пополняться):
+* Регистрация, аутентификация, авторизация с использованием Access и Refsresh JWT токенов
+* Выбор даты/времени и запись
+* Просмотр актуальной очереди по записи
+* Просмотр, редактирование таблиц Users и Queue в Админ панели
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Фишки (список будет пополняться):
+* Обновление Access токена по Refresh токену
+* Подтверждение аккаунта по почте
+* Самописный data/time picker
+* Красивые и фукнциональные таблицы в Админ панели
