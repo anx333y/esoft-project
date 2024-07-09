@@ -1,0 +1,12 @@
+.admin-queue-table {
+	width: 100%;
+}
+
+.admin-queue-grid-toolbar {
+	width: 100%;
+}
+
+.admin-queue-grid-toolbar-form {
+	display: flex;
+	width: 100%;
+}

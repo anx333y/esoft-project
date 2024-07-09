@@ -1,0 +1,14 @@
+.queue {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	width: 100%;
+}
+
+.queue-null {
+	width: 100%;
+	border-radius: 10px;
+	background-color: #fff;
+	padding: 80px 120px;
+	box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.08);
+}

@@ -1,0 +1,19 @@
+.calendar-chiplist {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.calendar-chiplist.s {
+	gap: 8px;
+	width: calc(32px * 7 + 8px * 6);
+}
+
+.calendar-chiplist.m {
+	gap: 10px;
+	width: calc(42px * 7 + 10px * 6);
+}
+
+.calendar-chiplist.l {
+	gap: 12px;
+	width: calc(64px * 7 + 12px * 6);
+}

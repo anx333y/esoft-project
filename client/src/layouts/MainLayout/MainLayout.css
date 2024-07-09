@@ -1,0 +1,8 @@
+.main-layout-content {
+	display: flex;
+}
+
+.main-layout-outlet-wrapper {
+	width: 100%;
+	padding: 20px 40px;
+}

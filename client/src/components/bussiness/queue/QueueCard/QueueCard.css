@@ -1,0 +1,32 @@
+.queue-card {
+	width: calc(25% - 3 * 8px / 4);
+	white-space: nowrap;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.08);
+
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.queue-card-main {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.queue-card-text {
+	width: min-content;
+	padding: 4px 8px;
+	border-radius: 10px;
+}
+
+.queue-card-text.number {
+	width: 42px;
+	height: 42px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 32px;
+}

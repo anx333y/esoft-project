@@ -1,0 +1,16 @@
+:root {
+	font-family: "Fira Sans", Arial, Helvetica, sans-serif;
+	/* padding: 0 120px; */
+	margin: 0;
+	padding: 0;
+	background-color: #E5E5E5;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 0;
+}

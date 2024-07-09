@@ -1,0 +1,12 @@
+.admin-dashboard {
+	display: flex;
+	flex-wrap: wrap;
+
+	gap: 32px;
+}
+
+.admin-dashboard-next-info {
+	display: flex;
+	flex-direction: column;
+}
+
