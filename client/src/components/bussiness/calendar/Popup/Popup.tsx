@@ -1,7 +1,7 @@
 import './Popup.css';
 import { shallowEqual } from 'react-redux';
 
-import { ForwardRefRenderFunction, forwardRef, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import TimeList from './TimeList/TimeList';
 import styleConfig from '../../../../style.config';
@@ -9,16 +9,30 @@ import { useAppDispatch, useAppSelector } from '../../../../store/hook';
 import { getISODate, isUserTodayQueue } from '../utils';
 import CalendarButton from '../../../ui/calendar/Button/CalendarButton';
 import { IPopupProps, IQueue } from '../../../../types';
-// import { fetchChangeQueueRow } from '../../../../store/asyncFunc';
 import TimeGroupList from './TimeGroupList/TimeGroupList';
-import { Collapse } from '@mui/material';
-import { useChangeQueueRowMutation } from '../../../../http/queueApi';
+import { Collapse, IconButton } from '@mui/material';
 import { updateCalendarData } from '../../../../store/calendarSlice';
 import { addPopupTimeRow } from '../../../../store/calendarPopupSlice';
 import { toast } from 'sonner';
+import { useChangeQueueRowMutation, useGetDataFromUserCalendarQuery } from '../../../../http/mainApi';
+import { CalendarMonth } from '@mui/icons-material';
+import UserCalendarDialog from './UserCalendarDialog/UserCalendarDialog';
 
-const Popup: ForwardRefRenderFunction<HTMLDivElement, IPopupProps> = ({size = 'm'}, ref) => {
+const Popup = ({size = 'm'}: IPopupProps) => {
 	const dispatch = useAppDispatch();
+
+	const data = useAppSelector((state) => state.calendar.data) || [];
+	const checkedRow = useAppSelector((state) => state.calendarPopup.checkedRow);
+	const dateTimeStamp = useAppSelector((state) => state.calendarPopup.dateTimeStamp, shallowEqual);
+	const userId = useAppSelector((state) => state.user.id);
+
+	const [selectedTimeGroup, setSelectedTimeGroup] = useState<string | null>(null);
+	const [savedTime, setSavedTime] = useState<any>({
+		time: null,
+		date: null
+	});
+	const [isDialogOpen, setIsDialogOpen] = useState(false);
+
 	const [
 		changeQueueRow,
 		{
@@ -28,16 +42,12 @@ const Popup: ForwardRefRenderFunction<HTMLDivElement, IPopupProps> = ({size = 'm
 		}
 	] = useChangeQueueRowMutation();
 
-	const data = useAppSelector((state) => state.calendar.data) || [];
-	const checkedRow = useAppSelector((state) => state.calendarPopup.checkedRow);
-	const dateTimeStamp = useAppSelector((state) => state.calendarPopup.dateTimeStamp, shallowEqual);
-	const userId = useAppSelector((state) => state.user.id);
-	const [time, setTime] = useState<IQueue[] | null>(null);
-	const [selectedTimeGroup, setSelectedTimeGroup] = useState<string | null>(null);
-	const [savedTime, setSavedTime] = useState<any>({
-		time: null,
-		date: null
-	});
+	const {
+		data: dataFromUserCalendar,
+		isSuccess: dataFromUserCalendarIsSuccess,
+		isError: dataFromUserCalendarIsError,
+		error: dataFromUserCalendarError
+	} = useGetDataFromUserCalendarQuery({user_id: userId});
 
 	useEffect(() => {
 		if (checkedRow) {
@@ -50,22 +60,19 @@ const Popup: ForwardRefRenderFunction<HTMLDivElement, IPopupProps> = ({size = 'm
 				date: beautifulDate
 			})
 		}
-	}, [checkedRow])
+	}, [checkedRow]);
 
-	useEffect(() => {
+	const time = useMemo(() => {
 		if (!data) {
-			// console.log("data нетю")
-			return;
+			return null;
 		}
 		const tempTime = data.filter(row => {
 			return row["queue_date"] === getISODate(dateTimeStamp);
 		});
 		if (!tempTime.length) {
-			// console.log('емае нету темпТайм')
-			return;
+			return null;
 		}
-		setTime(tempTime);
-		// console.log('обновился временный список времени')
+		return tempTime;
 	}, [data, dateTimeStamp])
 
 	const groupTime = useMemo(() => {
@@ -78,10 +85,9 @@ const Popup: ForwardRefRenderFunction<HTMLDivElement, IPopupProps> = ({size = 'm
 			if (!groupTimeObj[hours]) {
 				groupTimeObj[hours] = [row];
 			} else {
-				groupTimeObj[hours].push(row)
+				groupTimeObj[hours].push(row);
 			}
 		})
-		// console.log(groupTimeObj)
 		return groupTimeObj;
 	}, [time])
 
@@ -90,18 +96,17 @@ const Popup: ForwardRefRenderFunction<HTMLDivElement, IPopupProps> = ({size = 'm
 			return;
 		}
 		const date = new Date(dateTimeStamp);
+		dispatch(addPopupTimeRow({time: "0:0", row: null}));
 		return date.toLocaleDateString();
 	}, [dateTimeStamp]);
 
-	const updateRow = async () => {
-		if (!checkedRow || !userId) {
+	const updateRow = () => {
+		if (!checkedRow || !checkedRow.id || !userId) {
 			return;
 		}
-		console.log('await')
-		await changeQueueRow({id: checkedRow.id, content: {user_id: userId, status: "true"}});
-		dispatch(updateCalendarData({...checkedRow, user_id: userId, status: true}));
+		changeQueueRow({id: checkedRow.id, content: {user_id: userId, status: "booked"}});
+		dispatch(updateCalendarData({...checkedRow, user_id: userId, status: "booked"}));
 		dispatch(addPopupTimeRow({time: "0:0", row: null}))
-		console.log('dispatch')
 	};
 
 	const onClickButton = () => {
@@ -114,16 +119,27 @@ const Popup: ForwardRefRenderFunction<HTMLDivElement, IPopupProps> = ({size = 'm
 				description: `${savedTime.time} ${savedTime.date}`,
 			})
 		}
-	}, [changeQueueIsSuccess])
+	}, [changeQueueIsSuccess]);
+
+	useEffect(() => {
+		if (dataFromUserCalendarIsError) {
+			if ((dataFromUserCalendarError as {status: number}).status === 404) {
+				return;
+			}
+			toast.error('Ошибка!', {
+				description: `Ошибка загрузки пользовательского календаря, попробуйте перезагрузить страницу`,
+			});
+		}
+	}, [dataFromUserCalendarIsError])
 
 	if (!dateString) {
 		return;
 	}
-	console.log(userId)
+
 	return (
+		<>
 		<div
 			className="calendar-popup"
-			ref={ref}
 		>
 			<h2
 				className="calendar-popup-title"
@@ -137,9 +153,26 @@ const Popup: ForwardRefRenderFunction<HTMLDivElement, IPopupProps> = ({size = 'm
 				{dateString}
 			</h2>
 			<div className="calendar-popup-main">
-				{!!groupTime && <TimeGroupList values={Object.keys(groupTime)} state={selectedTimeGroup} onClickProp={(value: string) => setSelectedTimeGroup(value)} />}
+				{!!groupTime &&
+					<TimeGroupList
+						values={Object.keys(groupTime)}
+						state={selectedTimeGroup}
+						onClickProp={
+							(value: string) => setSelectedTimeGroup(value)
+						}
+					/>
+				}
 				<Collapse in={!!selectedTimeGroup} sx={{width: "100%"}}>
-					{!!groupTime && !!selectedTimeGroup && <TimeList values={groupTime[selectedTimeGroup]}/>}
+					{!!groupTime && !!selectedTimeGroup &&
+						<TimeList
+							values={groupTime[selectedTimeGroup]}
+							calendarValues={
+								dataFromUserCalendarIsSuccess
+									? dataFromUserCalendar.rows
+									: []
+							}
+						/>
+					}
 				</Collapse>
 			</div>
 			<div className="calendar-popup-button">
@@ -156,7 +189,22 @@ const Popup: ForwardRefRenderFunction<HTMLDivElement, IPopupProps> = ({size = 'm
 				<span>Ошибка, попробуйте позже</span>
 			}
 		</div>
+		<div className="user-calendar-button">
+			<IconButton onClick={() => setIsDialogOpen(true)}>
+				<CalendarMonth color={dataFromUserCalendarIsSuccess ? "success" : "secondary"} fontSize='inherit' />
+			</IconButton>
+		</div>
+		<UserCalendarDialog
+			open={isDialogOpen}
+			setOpen={setIsDialogOpen}
+			link={
+				dataFromUserCalendarIsSuccess
+					? dataFromUserCalendar["ical_link"]
+					: null
+			}
+			userId={userId} />
+		</>
 	)
 };
 
-export default forwardRef(Popup);
+export default Popup;

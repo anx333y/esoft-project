@@ -1,4 +1,4 @@
-import { IDate, IQueue } from "../../../types";
+import { IDataFromUserCalendarRow, IDate, IQueue } from "../../../types";
 
 
 const VISIBLE_CELLS_AMOUNT = 7 * 6;
@@ -166,10 +166,29 @@ export const isUserTodayQueue = (data: IQueue[] | null, userId: string) => {
 	if (!data || !Array.isArray(data)) {
 		return false;
 	}
-	console.log(userId)
+	
 	const isUser = data.findIndex((row: IQueue) => (
 		row.user_id === userId
 	));
 
 	return isUser !== -1;
 };
+
+export const getDateWithTimezone = (date: string, time: string) => {
+	const dateWithTimezone = new Date(date);
+	const timeArr = time.split(':');
+	dateWithTimezone.setHours(parseInt(timeArr[0]));
+	dateWithTimezone.setMinutes(parseInt(timeArr[1]));
+
+	return dateWithTimezone;
+};
+
+export const isDateInBetween = (date: Date, leftDate: Date, rightDate: Date) => {
+	return leftDate.getTime() <= date.getTime() && date.getTime() <= rightDate.getTime();
+};
+
+export const isDateInCalendarValues = (date: Date, values: IDataFromUserCalendarRow[]) => {
+	const findedDateIndex = values.findIndex((row) => isDateInBetween(date, new Date(row.start), new Date(row.end)));
+	return findedDateIndex !== -1;
+}
+

@@ -1,4 +1,4 @@
-import { Button, ButtonProps, darken, lighten } from "@mui/material";
+import { Button, ButtonProps, lighten } from "@mui/material";
 import "./Button.css";
 import styleConfig from "../../../../../style.config";
 

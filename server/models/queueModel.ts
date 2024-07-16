@@ -1,6 +1,6 @@
 import knex from "knex";
 import dbConfig from "../config/db";
-import { queueData } from "../types";
+import { getAllQueryParams, queueData } from "../types";
 
 const knexPool = knex({
 	client: dbConfig.client,
@@ -27,48 +27,68 @@ class QueueModel {
 		return formattedRows;
 	};
 
-	async getAll(page = -1, limit = -1, filterField = "", filterValue = "", sortField = "", sort = "") {
-		let query = knexPool("queue")
-				.leftJoin("users", "users.id", "=", "queue.user_id")
-				.select(
-						"queue.id",
-						"queue_date",
-						"queue_time",
-						knexPool.raw("COALESCE(queue.user_id, -1) as user_id"),
-						knexPool.raw("COALESCE(users.full_name, '') as full_name"),
-						"status"
-				);
+	async getAll({page = -1, limit = -1, filterFields = [], filterValues = [], sortFields = [], sorts = [], selectFields = []}: getAllQueryParams) {
+		let query = knexPool("queue");
 
-		if (!(limit !== -1 && limit > 0)) {
+		if (selectFields.length) {
+			query.select(...selectFields);
+		}
+
+		if (page === -1 && limit === -1 && !filterFields.length && !filterValues.length && !sortFields.length && !sorts.length) {
 			const rows = await query.orderBy(["queue_date", "queue_time"]);
 			return this.formateRows(rows);
 		}
 
-		const offset = (page - 1) * limit;
-		query = query.limit(limit).offset(offset);
+		if (!selectFields.length) {
+			query = knexPool("queue")
+			.leftJoin("users", "users.id", "=", "queue.user_id")
+			.select(
+					"queue.id",
+					"queue_date",
+					"queue_time",
+					knexPool.raw("COALESCE(queue.user_id, -1) as user_id"),
+					knexPool.raw("COALESCE(users.full_name, '') as full_name"),
+					knexPool.raw("COALESCE(users.email, '') as email"),
+					"status"
+			);
+		}
+		
+		if (page !== -1 && limit !== -1) {
+			const offset = (page - 1) * limit;
+			query = query.limit(limit).offset(offset);
+		}
 
-		if (filterField && filterValue) {
-			if (['status', 'queue_date', 'queue_time'].includes(filterField)) {
-				query = query.where(filterField, filterValue);
-			} else {
-				query = query.where(filterField, 'ilike', `%${filterValue}%`);
+		if (filterFields.length && filterValues.length && filterFields.length === filterValues.length) {
+			for (let i = 0; i < filterFields.length; i++) {
+				if (['queue_date', 'queue_time', 'status', 'user_id'].includes(filterFields[i])) {
+					query = query.where(filterFields[i], filterValues[i]);
+				} else {
+					query = query.where(filterFields[i], 'ilike', `%${filterValues[i]}%`);
+				}
 			}
 		}
 
-		if (sortField && sort) {
-			query = query.orderBy(sortField, sort);
+		if (sortFields.length && sorts.length) {
+			const orderByArr = [];
+			for (let i = 0; i < sortFields.length; i++) {
+				orderByArr.push({column: sortFields[i], order: sorts[i]});
+			}
+			query = query.orderBy(orderByArr);
 		} else {
-			query = query.orderBy(["queue_date", "queue_time"])
+			query = query.orderBy(["queue_date", "queue_time"]);
 		}
 
-		const rows = await query
-		const total = await knexPool("queue").count('queue_date as count').first();
-		return {
+		const rows = await query;
+		if (page !== -1 && limit !== -1) {
+			const total = await knexPool("queue").count('queue_date as count').first();
+			return {
 				rows: this.formateRows(rows),
 				total: total ? total.count : 0,
 				page,
 				limit
-		};
+			};
+		}
+		return this.formateRows(rows);
 	}
 
 
@@ -133,6 +153,15 @@ class QueueModel {
 			.from("queue")
 			.where("queue_date", queueDate)
 			.leftJoin("users", "queue.user_id", "users.id")
+			.select(
+				"queue.id",
+				"queue_date",
+				"queue_time",
+				"user_id",
+				"full_name",
+				"email",
+				"status"
+			)
 			.orderBy(["queue_date", "queue_time"]);
 		const rows = await query;
 		const formattedRows = rows.map(row => {
@@ -151,7 +180,7 @@ export default QueueModel;
 export type { QueueModel };
 
 async function addRecords() {
-  const today = new Date("2024-07-17");
+  const today = new Date("2024-07-06");
 	let nextWeekDateTime = [];
 	const daysToMonday = Math.abs((7 - today.getDay()) % 7 + 1);
 	const nextDate = new Date(today);
@@ -173,9 +202,9 @@ async function addRecords() {
 	}
 	// console.log(nextWeekDateTime);
 
-  if (nextWeekDateTime.length > 0) {
-    await knexPool('queue').insert(nextWeekDateTime).returning('*');
-  }
+	if (nextWeekDateTime.length > 0) {
+		await knexPool('queue').insert(nextWeekDateTime).returning('*');
+	}
 }
 
 // addRecords();

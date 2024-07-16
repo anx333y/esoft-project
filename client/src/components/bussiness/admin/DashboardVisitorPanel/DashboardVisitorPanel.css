@@ -1,0 +1,19 @@
+.admin-dashboard-visitor-panel {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	gap: 8px;
+}
+
+.admin-dashboard-visitor-panel-time {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.admin-dashboard-visitor-panel-buttons {
+	display: flex;
+	justify-content: center;
+	margin-top: 8px;
+	gap: 8px;
+}

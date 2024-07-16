@@ -5,8 +5,15 @@
 	gap: 32px;
 }
 
-.admin-dashboard-next-info {
+.admin-dashboard-stats {
 	display: flex;
 	flex-direction: column;
+	gap: 8px;
+	padding: 8px;
 }
 
+.admin-dashboard-stats-item {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+}

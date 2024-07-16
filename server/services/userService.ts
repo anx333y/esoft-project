@@ -1,6 +1,5 @@
-import { SALT_ROUNDS, SECRET_KEY, SESSION_DURATION } from "../app";
 import { UserModel } from "../models/userModel";
-import { userData } from "../types";
+import { getAllQueryParams, userData } from "../types";
 import mailService from "./mailService";
 import TokenService from "./tokenService";
 const jwt = require('jsonwebtoken');
@@ -16,12 +15,12 @@ class UserService {
 		this.tokenService = new TokenService;
 	}
 
-	async getAllUsers(page: number, limit: number, filterField: string, filterValue: string, sortField: string, sort: string, selectFields: string[]) {
-		return this.userModel.getAll(page, limit, filterField, filterValue, sortField, sort, selectFields);
+	async getAllUsers(args: getAllQueryParams) {
+		return this.userModel.getAll(args);
 	};
 	
 	async createUser(userData: userData) {
-		const hashedPassword = await bcrypt.hash(userData.password, SALT_ROUNDS);
+		const hashedPassword = await bcrypt.hash(userData.password, process.env.JWT_SALT_ROUNDS);
 		const activationLink = uuid.v4();
 
 		const user = await this.userModel.create({...userData, password: hashedPassword, "activation_link": activationLink});

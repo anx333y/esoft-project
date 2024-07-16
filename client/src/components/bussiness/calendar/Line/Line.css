@@ -1,8 +1,0 @@
-.calendar-line {
-	display: flex;
-	overflow: hidden;
-}
-
-.calendar-line .autosize {
-	width: 100%;
-}

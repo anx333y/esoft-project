@@ -12,6 +12,9 @@ const appTheme = createTheme({
 		},
 		"success": {
 			"main": "#86CD82"
+		},
+		"error": {
+			"main": "#EF6F6C"
 		}
 	},
 	typography: {

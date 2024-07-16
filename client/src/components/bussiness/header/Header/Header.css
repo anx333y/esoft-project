@@ -28,3 +28,14 @@
 .header-logo img {
 	height: 80%;
 }
+
+.header-main-left {
+	display: flex;
+	gap: 4px;
+}
+
+.header-main-right {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}

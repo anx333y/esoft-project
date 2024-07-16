@@ -15,7 +15,7 @@ const Chip = ({
 	size = "m",
 	fullDate,
 	startDate,
-	popupElem
+	setIsPopupOpen
 }: IChipProps) => {
 	const {checkedDate, setCheckedDate} = useContext(CheckedDateContext);
 	// console.log('chip')
@@ -39,7 +39,7 @@ const Chip = ({
 				"month": 0,
 				"date": 0
 			});
-			popupElem && popupElem.classList.add('hidden');
+			setIsPopupOpen(false);
 			dispatch(addPopupDate(0));
 			return;
 		}
@@ -51,9 +51,8 @@ const Chip = ({
 		};
 		setCheckedDate(newCheckedDate);
 		dispatch(addPopupDate(getTimeStampFromDateObj(newCheckedDate)));
-		popupElem && popupElem.classList.remove('hidden');
+		setIsPopupOpen(true);
 	};
-	// console.log(data)
 
 	return (
 		<CalendarChip

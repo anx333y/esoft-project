@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import styleConfig from "../../../../style.config";
+import styleConfig from "../../../../../style.config";
 import "./DashboardItem.css";
 
 type IDashboardItemProps = {

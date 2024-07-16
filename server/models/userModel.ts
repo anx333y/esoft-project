@@ -1,6 +1,6 @@
 import knex from "knex";
 import dbConfig from "../config/db";
-import { userData } from "../types";
+import { getAllQueryParams, queueData, userData } from "../types";
 
 const knexPool = knex({
 	client: dbConfig.client,
@@ -15,44 +15,53 @@ const knexPool = knex({
 });
 
 class UserModel {
-	async getAll(page = -1, limit = -1, filterField = "", filterValue = "", sortField = "", sort = "", selectFields = ['*']) {
-		if (selectFields[0] === '*') {
+	async getAll({page = -1, limit = -1, filterFields = [], filterValues = [], sortFields = [], sorts = [], selectFields = []}: getAllQueryParams) {
+		if (!selectFields.length) {
 			selectFields = ["id", "full_name", "email", "role", "is_activated"];
 		}
-
-		if (!(limit !== -1 && limit > 0)) {
-			let query = knexPool('users').select(...selectFields).orderBy('id');
-			const rows = await query;
+		let query = knexPool("users");
+		if (page === -1 && limit === -1 && !filterFields.length && !filterValues.length && !sortFields.length && !sorts.length) {
+			const rows = await query.select(...selectFields).orderBy("id");
 			return rows;
 		}
-		let query = knexPool("users").select(["id", "full_name", "email", "role", "is_activated"]);
-		const offset = (page - 1) * limit;
-		query = query.limit(limit).offset(offset);
+		
+		if (page !== -1 && limit !== -1) {
+			const offset = (page - 1) * limit;
+			query = query.limit(limit).offset(offset);
+		}
 
-		if (filterField && filterValue) {
-			if (['is_activated', 'id'].includes(filterField)) {
-				query = query.where(filterField, filterValue);
-			} else {
-				query = query.where(filterField, 'ilike', `%${filterValue}%`);
+		if (filterFields.length && filterValues.length && filterFields.length === filterValues.length) {
+			for (let i = 0; i < filterFields.length; i++) {
+				if (['is_activated', 'id'].includes(filterFields[i])) {
+					query = query.where(filterFields[i], filterValues[i]);
+				} else {
+					query = query.where(filterFields[i], 'ilike', `%${filterValues[i]}%`);
+				}
 			}
 		}
 
-		if (sortField && sort) {
-			query = query.orderBy(sortField, sort);
+		if (sortFields.length && sorts.length) {
+			const orderByArr = [];
+			for (let i = 0; i < sortFields.length; i++) {
+				orderByArr.push({column: sortFields[i], order: sorts[i]});
+			}
+			query = query.orderBy(orderByArr);
 		} else {
-			query = query.orderBy("id");
+			query = query.orderBy("id")
 		}
 
-		const rows = await query
+		const rows = await query.select(...selectFields);
 		const total = await knexPool("users").count('id as count').first();
-		return {
+		if (page !== -1 && limit !== -1) {
+			return {
 				rows: rows,
 				total: total ? total.count : 0,
 				page,
 				limit
-		};
-	};
-
+			};
+		}
+		return rows;
+	}
 	async create(userData: userData) {
 		const query = knexPool("users")
 			.insert(userData)

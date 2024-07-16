@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 import { getDaysAmountInAMonth, getCurrentMonthDays, getNextMonthDays, getPreviousMonthDays } from '../utils';
 import { IChipListProps } from '../../../../types';
 
-const ChipList = ({ chipsData, startDate, size = "m", popupElem }: IChipListProps) => {
+const ChipList = ({ chipsData, startDate, size = "m", setIsPopupOpen }: IChipListProps) => {
 	const [panelMonth, panelYear] = useMemo(() => ([
 		chipsData.month,
 		chipsData.year
@@ -36,7 +36,7 @@ const ChipList = ({ chipsData, startDate, size = "m", popupElem }: IChipListProp
 						fullDate={item}
 						startDate={startDate}
 						size={size}
-						popupElem={popupElem}
+						setIsPopupOpen={setIsPopupOpen}
 					/>
 				))
 			}

@@ -53,14 +53,14 @@ const userSlice = createSlice({
 			state["role"] = "";
 			state.isAuth = false;
 		},
-		accessErrorAnalyzer: (state, action) => {
-			if (action.payload.status && (action.payload.status === "403" || action.payload.status === "401")) {
-				state.isAuth = false;
-			}
-		}
+		// accessErrorAnalyzer: (state, action) => {
+		// 	if (action.payload.status && (action.payload.status === "403" || action.payload.status === "401")) {
+		// 		state.isAuth = false;
+		// 	}
+		// }
 	}
 });
 
-export const { setUser, setUserByToken, logout, accessErrorAnalyzer} = userSlice.actions;
+export const { setUser, setUserByToken, logout} = userSlice.actions;
 
 export default userSlice.reducer;

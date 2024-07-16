@@ -1,10 +1,12 @@
+import { Dispatch } from "react";
+
 export type IQueue = {
 	id?: string;
 	"queue_date": string;
 	"queue_time": string;
 	"user_id": string | null;
 	"full_name"?: string;
-	"status"?: boolean;
+	"status"?: 'free' | 'booked' | 'passed' | 'missed' | 'process';
 };
 
 export type IDate = {
@@ -49,14 +51,14 @@ export type IChipProps = {
 	name?: string;
 	fullDate: IDate;
 	startDate?: IDate;
-	popupElem: HTMLDivElement;
+	setIsPopupOpen: Dispatch<boolean>;
 };
 
 export type IChipListProps = {
 	size?: 's' | 'm' | 'l';
 	chipsData: IPanel;
 	startDate: IDate;
-	popupElem: HTMLDivElement;
+	setIsPopupOpen: Dispatch<boolean>;
 };
 
 export type ILineProps = {
@@ -70,13 +72,23 @@ export type IPopupProps = {
 	size?: 's' | 'm' | 'l';
 };
 
+export type IDataFromUserCalendarRow = {
+	start: string;
+	end: string;
+}
+
 export type ITimeListProps = {
 	values: IQueue[] | null;
+	calendarValues: IDataFromUserCalendarRow[];
+	dateString?: string;
 };
 
 export type IPopupItemProps = {
 	row: IQueue;
 	disabled?: boolean;
+	darkColor?: string;
+	lightColor?: string;
+	isInUserCalendar?: boolean;
 };
 
 export type IQueueCardProps = {
@@ -110,4 +122,17 @@ export type IRefreshToken = {
 	refreshToken: string;
 }
 
+export type IUserCalendar = {
+	"user_id"?: string;
+	"link"?: string;
+}
 
+export type IQueryParams = {
+	page?: number;
+	limit?: number;
+	filterField?: string | string[];
+	filterValue?: string | string[];
+	sortField?: string | string[];
+	sort?: string | string[];
+	selectFields?: string[];
+}

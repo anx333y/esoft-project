@@ -1,5 +1,4 @@
 import { Response, NextFunction } from "express";
-import { SECRET_KEY } from "../app";
 import { RequestWithUser, userData } from "../types";
 const jwt = require("jsonwebtoken");
 
@@ -17,7 +16,7 @@ const authenticateJWT = (req: RequestWithUser, res: Response, next: NextFunction
 		res.status(401).json({ message: 'Token not provided' });
 	}
 
-	jwt.verify(token, SECRET_KEY, (err: Error, user: userData) => {
+	jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err: Error, user: userData) => {
 		if (err) {
 			return res.status(403).json({ message: 'Invalid token' });
 		}

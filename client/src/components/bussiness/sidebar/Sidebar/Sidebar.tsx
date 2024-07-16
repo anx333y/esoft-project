@@ -1,25 +1,43 @@
-import Title from "../../../ui/Title/Title";
+import { Tabs } from "@mui/material";
 import SidebarItem from "../SidebarItem/SidebarItem";
 import "./Sidebar.css";
+import { useRouteMatch } from "../../../../helpers/hooks";
+
 
 const Sidebar = () => {
+	const routeMatch = useRouteMatch(['/', '/calendar', '/admin']);
+	const currentTab = routeMatch?.pattern?.path;
+	console.log(currentTab)
+
 	return (
 		<div className="sidebar">
-			<SidebarItem path="/">
-				<Title variant="h3">
-					Очередь
-				</Title>
-			</SidebarItem>
-			<SidebarItem path="/calendar">
-				<Title variant="h3">
-					Запись
-				</Title>
-			</SidebarItem>
-			<SidebarItem path="/admin">
-				<Title variant="h3">
-					Админ-панель
-				</Title>
-			</SidebarItem>
+			<Tabs
+				orientation="vertical"
+				indicatorColor="secondary"
+				TabIndicatorProps={{
+					sx: {
+						width: "4px",
+						borderRadius: "10px",
+					}
+				}}
+				value={currentTab}
+			>
+				<SidebarItem
+					label="Очередь"
+					to="/"
+					value="/"
+				/>
+				<SidebarItem
+					label="Запись"
+					to="/calendar"
+					value="/calendar"
+				/>
+				<SidebarItem
+					label="Админ"
+					to="/admin"
+					value="/admin"
+				/>
+			</Tabs>
 		</div>
 	)
 };

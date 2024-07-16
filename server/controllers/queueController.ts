@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/userService";
 import QueueService from "../services/queueService";
+import { getQueryParamsArrayOrString } from "../utils";
 
 class QueueController {
 	queueService: QueueService;
@@ -13,11 +14,12 @@ class QueueController {
 		try {
 			const page = typeof req.query.page === 'string' ? parseInt(req.query.page) : -1;
   		const limit = typeof req.query.limit === 'string' ? parseInt(req.query.limit) : -1;
-			const filterField = typeof req.query.filterField === 'string' ? String(req.query.filterField) : "";
-			const filterValue = typeof req.query.filterValue === 'string' ? String(req.query.filterValue) : "";
-			const sortField = typeof req.query.sortField === 'string' ? String(req.query.sortField) : "";
-			const sort = typeof req.query.sort === 'string' ? String(req.query.sort) : "";
-			const queue = await this.queueService.getAllQueue(page, limit, filterField, filterValue, sortField, sort);
+			const filterFields = getQueryParamsArrayOrString(req, 'filterField');
+			const filterValues = getQueryParamsArrayOrString(req, 'filterValue');
+			const sortFields = getQueryParamsArrayOrString(req, 'sortField');
+			const sorts = getQueryParamsArrayOrString(req, 'sort');
+			const selectFields = getQueryParamsArrayOrString(req, 'selectFields')
+			const queue = await this.queueService.getAllQueue({page, limit, filterFields, filterValues, sortFields, sorts, selectFields});
 			res.status(200).json(queue);
 		} catch (error) {
 			res.status(500).json({error: (error as Error).message});
@@ -86,6 +88,7 @@ class QueueController {
 			res.status(500).json({error: (error as Error).message});
 		}
 	};
+
 };
 
 export default QueueController;

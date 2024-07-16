@@ -16,7 +16,8 @@ export type queueData = {
 	"queue_date": string;
 	"queue_time": string;
 	"user_id"?: string;
-	"status"?: boolean;
+	"status"?: 'free' | 'booked' | 'passed' | 'missed' | 'process';
+	"email"?: string;
 };
 
 export type newsData = {
@@ -32,4 +33,19 @@ export interface RequestWithUser extends Request {
 export type tokenData = {
 	"user_id": string;
 	"refresh_token": string;
+}
+
+export type getAllQueryParams = {
+	page?: number,
+	limit?: number,
+	filterFields?: string[] | [],
+	filterValues?: string[] | [],
+	sortFields?: string[] | [],
+	sorts?: string[] | [],
+	selectFields?: string[] | []
+};
+
+export type userCalendarData = {
+	"user_id": string;
+	"ical_link": string;
 }

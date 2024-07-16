@@ -3,6 +3,7 @@ require('dotenv').config()
 import express from "express";
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const schedule = require('node-schedule');
 
 import UserController from "./controllers/userController";
 import UserModel from "./models/userModel";
@@ -18,6 +19,10 @@ import NewsController from "./controllers/newsController";
 import newsRoute from "./routes/newsRoute";
 import signRoute from "./routes/signRoute";
 import authenticateJWT from "./middlewares/authenticateJWT";
+import UserCalendarController from "./controllers/userCalendarController";
+import UserCalendarModel from "./models/userCalendarModel";
+import UserCalendarService from "./services/userCalendarService";
+import userCalendarRoute from "./routes/userCalendarRoute";
 
 
 const userModel = new UserModel;
@@ -32,11 +37,12 @@ const newsModel = new NewsModel;
 const newsService = new NewsService(newsModel);
 const newsController = new NewsController(newsService);
 
+const userCalendarModel = new UserCalendarModel;
+const userCalendarService = new UserCalendarService(userCalendarModel);
+const userCalendarController = new UserCalendarController(userCalendarService);
+
 const SERVER_PORT = 3000;
 const SERVER_URL = 'localhost';
-export const SECRET_KEY = 'qwerty';
-export const SESSION_DURATION = '6h'; // Длительность сессии
-export const SALT_ROUNDS = 10;
 
 const app = express();
 
@@ -48,11 +54,13 @@ app.use(cors({
 }))
 app.use('/api', userRoute(userController));
 app.use('/api', signRoute(userController));
+app.use('/api', userCalendarRoute(userCalendarController));
 app.use('/api', authenticateJWT, queueRoute(queueController));
 app.use('/api', authenticateJWT, newsRoute(newsController));
+
+queueService.remindUserRecording();
+const job = schedule.scheduleJob('0 * * * *', queueService.remindUserRecording.bind(queueService));
 
 app.listen(SERVER_PORT, SERVER_URL, () => {
 	console.log('started on link: https://localhost:3000')
 });
-
-// console.log(process.env.SMTP_PASSWORD)

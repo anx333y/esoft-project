@@ -8,6 +8,12 @@ type IStyleConfig = {
 		},
 		middle?: {
 			[key: string]: string
+		},
+		success: {
+			[key: string]: string
+		},
+		error: {
+			[key: string]: string
 		}
 	};
 	sizes: {
@@ -44,6 +50,12 @@ const styleConfig: IStyleConfig = {
 		},
 		"middle": {
 			"dark": "#828282"
+		},
+		"success": {
+			"main": "#86CD82"
+		},
+		"error": {
+			"main": "#EF6F6C"
 		}
 	},
 	"sizes": {

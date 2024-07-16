@@ -1,15 +1,12 @@
 import { GridColDef, GridEventListener, GridFilterModel, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridSortModel, useGridApiRef } from "@mui/x-data-grid";
 import Table from "../../../ui/Admin/Table/Table";
-import { useChangeUserMutation, useDeleteUserMutation, useGetUsersQuery } from "../../../../http/adminApi";
+import { useChangeUserMutation, useDeleteUserMutation, useGetUsersQuery } from "../../../../http/mainApi";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAppDispatch } from "../../../../store/hook";
-import { accessErrorAnalyzer } from "../../../../store/userSlice";
 import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
 import TableActionItem from "../../../ui/Admin/TableActionItem/TableActionItem";
 import { toast } from "sonner";
 
 const UsersTable = () => {
-	const dispatch = useAppDispatch();
 	const apiRef = useGridApiRef();
 	const [rows, setRows] = useState<any>(null);
 	const [paginationModel, setPaginationModel] = useState({
@@ -21,7 +18,7 @@ const UsersTable = () => {
 	const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 	const [editRow, setEditRow] = useState<GridRowId | null>(null);
 
-	const { data, isSuccess, isLoading, isError, error, refetch } = useGetUsersQuery({
+	const { data, isSuccess, isLoading, isError, refetch } = useGetUsersQuery({
 		page: paginationModel.page + 1,
 		limit: paginationModel.pageSize,
 		...filterOptions,
@@ -33,8 +30,7 @@ const UsersTable = () => {
 		{
 			isSuccess: changeUserIsSuccess,
 			isLoading: changeUserIsLoading,
-			isError: changeUserIsError,
-			error: changeUserError
+			isError: changeUserIsError
 		}
 	] = useChangeUserMutation();
 
@@ -43,8 +39,7 @@ const UsersTable = () => {
 		{
 			isSuccess: deleteUserIsSuccess,
 			isLoading: deleteUserIsLoading,
-			isError: deleteUserIsError,
-			error: deleteUserError
+			isError: deleteUserIsError
 		}
 	] = useDeleteUserMutation();
 
@@ -113,7 +108,15 @@ const UsersTable = () => {
 				description: `Ошибка ${changeUserIsError ? "редактирования" : "удаления"} строки, попробуйте ещё раз`,
 			});
 		}
-	}, [changeUserIsError, deleteUserIsError])
+	}, [changeUserIsError, deleteUserIsError]);
+
+	useEffect(() => {
+		if (isError) {
+			toast.error('Ошибка!', {
+				description: `Ошибка получения данных, попробуйте обновить страницу`,
+			});
+		}
+	}, [isError]);
 
 	useEffect(() => {
 		if (changeUserIsSuccess || deleteUserIsSuccess) {
@@ -194,11 +197,11 @@ const UsersTable = () => {
 		}
 	}, []);
 
-	useEffect(() => {
-		if (isError || changeUserIsError || deleteUserIsError) {
-			dispatch(accessErrorAnalyzer(error || changeUserError || deleteUserError));
-		}
-	}, [isError, changeUserIsError, deleteUserIsError])
+	// useEffect(() => {
+	// 	if (isError || changeUserIsError || deleteUserIsError) {
+	// 		dispatch(accessErrorAnalyzer(error || changeUserError || deleteUserError));
+	// 	}
+	// }, [isError, changeUserIsError, deleteUserIsError])
 
 	const rowCountRef = useRef(isSuccess ? data?.total : 0);
 

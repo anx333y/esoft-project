@@ -1,3 +1,25 @@
 .sign-layout {
+	position: relative;
 	height: 100vh;
+	overflow: hidden;
+}
+
+.sign-layout-background {
+	position: absolute;
+	top: calc(50% - 200vh);
+	right: calc(50% - 200vh);
+	width: 400vh;
+	height: 400vh;
+	background: rgb(239,111,108);
+	background: linear-gradient(57deg, rgba(239,111,108,1) 20%, rgba(47,128,237,1) 80%);
+	animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+	from {
+		transform: rotate(0)
+	}
+	to {
+		transform: rotate(360deg)
+	}
 }

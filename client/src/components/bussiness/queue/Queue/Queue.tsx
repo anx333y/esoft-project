@@ -1,5 +1,4 @@
 import { useEffect, useMemo } from "react";
-import { useGetQueueByDateQuery } from "../../../../http/queueApi";
 import { IQueue, IUserFields } from "../../../../types";
 import Title from "../../../ui/Title/Title";
 import QueueList from "../QueueList/QueueList";
@@ -8,11 +7,9 @@ import QueueTimer from "./QueueTimer";
 import { getISODate } from "../../calendar/utils";
 import { Skeleton } from "@mui/material";
 import { toast } from "sonner";
-import { useAppDispatch } from "../../../../store/hook";
-import { accessErrorAnalyzer } from "../../../../store/userSlice";
+import { useGetQueueQuery } from "../../../../http/mainApi";
 
 const Queue = () => {
-	const dispatch = useAppDispatch();
 
 	const todayISODate = useMemo(() => {
 		return getISODate(+new Date());
@@ -21,18 +18,19 @@ const Queue = () => {
 	const {
 		data,
 		isLoading,
-		isError,
-		error
-	 } = useGetQueueByDateQuery(todayISODate);
+		isError
+	 } = useGetQueueQuery({
+		filterField: ['queue_date', 'status'],
+		filterValue: [todayISODate, 'booked']
+	 });
 
 	const visibleList = useMemo(() => {
-		return data?.filter((row: IQueue & IUserFields) => row.status === true) || [];
+		return data?.filter((row: IQueue & IUserFields) => row.status === 'booked') || [];
 	}, [data])
 
 	useEffect(() => {
 		if (isError) {
-			toast.error('Ошибка получения данных');
-			dispatch(accessErrorAnalyzer(error));
+			toast.error('Ошибка получения данных, попробуйте перезагрузить странциу');
 		}
 	}, [isError])
 

@@ -8,36 +8,28 @@ import QueuePage from './pages/QueuePage/QueuePage.tsx';
 import CalendarPage from './pages/CalendarPage/CalendarPage.tsx';
 import SignLayout from './layouts/SignLayout/SignLayout.tsx';
 import SignPage from './pages/SignPage/SignPage.tsx';
-import { useAppDispatch, useAppSelector } from './store/hook.ts';
-import { useEffect } from 'react';
-import { setUser } from './store/userSlice.ts';
-import { useCheckAuthUserMutation } from './http/signApi.ts';
 import { Toaster } from 'sonner';
 import AdminPage from './pages/AdminPage/AdminPage.tsx';
+import { useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from './store/hook.ts';
+import { setUser } from './store/userSlice.ts';
 
 const App = () => {
 	const dispatch = useAppDispatch();
 	const user = localStorage.getItem("user") || null;
-	const [checkAuthUser, {data, isSuccess, isError}] = useCheckAuthUserMutation();
-	const isAuth = useAppSelector(state => state.user.isAuth);
+	const userId = useAppSelector(state => state.user.id);
 
 	useEffect(() => {
 		if (user) {
-			checkAuthUser();
+			dispatch(setUser(JSON.parse(user).token))
 		}
-	}, [isAuth])
-
-	useEffect(() => {
-		if (isSuccess) {
-			dispatch(setUser(data.accessToken))
-		}
-	}, [isSuccess]);
+	}, [user])
 
 	return (
 		<ThemeProvider theme={appTheme}>
 			<BrowserRouter basename={import.meta.env.BASE_URL}>
 				<Routes>
-					<Route path='/' element={!!user && !isError ? <MainLayout /> : <Navigate to="/login" replace />}>
+					<Route path='/' element={!!user || !!userId ? <MainLayout /> : <Navigate to="/login" replace />}>
 						<Route path='/' element={<QueuePage />} />
 						<Route path='/calendar/' element={<CalendarPage />}/>
 						<Route path='/admin' element={<AdminPage />} />

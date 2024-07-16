@@ -1,15 +1,15 @@
 import './Calendar.css';
 import Carousel from "../Carousel/Carousel";
 import ChipList from "../ChipList/ChipList";
-import { createContext, useEffect, useRef, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import Popup from '../Popup/Popup';
 
 import { useAppDispatch, useAppSelector } from '../../../../store/hook';
 import { IDate, ICalendarProps, ICheckedDateContext, IPanel } from '../../../../types';
-import { useGetAllQueueQuery } from '../../../../http/queueApi';
 import { setCalendarData } from '../../../../store/calendarSlice';
 import { Skeleton } from '@mui/material';
-import { accessErrorAnalyzer } from '../../../../store/userSlice';
+import { useGetQueueQuery } from '../../../../http/mainApi';
+import { toast } from 'sonner';
 
 export const CheckedDateContext = createContext<ICheckedDateContext>({
 	checkedDate: {
@@ -23,7 +23,7 @@ export const CheckedDateContext = createContext<ICheckedDateContext>({
 const Calendar = ({fullDate, size = 'm'}: ICalendarProps) => {
 	const dispatch = useAppDispatch();
 
-	const {data, isSuccess, isLoading, isError, error} = useGetAllQueueQuery(null);
+	const {data, isSuccess, isLoading, isError} = useGetQueueQuery({});
 	const storeDate = useAppSelector((state) => state.calendar.data);
 
 
@@ -32,20 +32,13 @@ const Calendar = ({fullDate, size = 'm'}: ICalendarProps) => {
 		"year": fullDate.year,
 		"month": fullDate.month
 	});
-
-	const popupRef = useRef<HTMLDivElement>(null!);
+	const [isPopupOpen, setIsPopupOpen] = useState(true);
 
 	useEffect(() => {
 		if (isSuccess) {
 			dispatch(setCalendarData(data));
 		}
 	}, [data])
-
-	useEffect(() => {
-		if (isError) {
-			dispatch(accessErrorAnalyzer(error));
-		}
-	}, [isError])
 
 	if (isLoading || !storeDate) {
 		return (
@@ -63,9 +56,10 @@ const Calendar = ({fullDate, size = 'm'}: ICalendarProps) => {
 	}
 
 	if (isError) {
-		return (
-			<span>Ошибка получения данных</span>
-		)
+		toast.error('Ошибка!', {
+			description: 'Ошибка получения данных, попробуйте перезагрузить страницу'
+		})
+		return;
 	}
 
 	return (
@@ -76,10 +70,10 @@ const Calendar = ({fullDate, size = 'm'}: ICalendarProps) => {
 				<div className="calendar-main">
 					<Carousel panel={{panelMonthYear, setPanelMonthYear}} size={size}/>
 					{
-						isSuccess && <ChipList size={size} chipsData={panelMonthYear} startDate={fullDate} popupElem={popupRef.current} />
+						isSuccess && <ChipList size={size} chipsData={panelMonthYear} startDate={fullDate} setIsPopupOpen={setIsPopupOpen} />
 					}
 				</div>
-				<Popup ref={popupRef} size={size} />
+				{isPopupOpen && <Popup size={size} />}
 			</div>
 		</CheckedDateContext.Provider>
 	);

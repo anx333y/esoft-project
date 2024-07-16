@@ -8,7 +8,7 @@ import CalendarChip from '../../../../ui/calendar/Chip/CalendarChip';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hook';
 import { IPopupItemProps } from '../../../../../types';
 
-const TimeListItem = ({row, disabled}: IPopupItemProps) => {
+const TimeListItem = ({row, disabled, darkColor, lightColor}: IPopupItemProps) => {
 	const dispatch = useAppDispatch();
 	const time = useAppSelector((state) => state.calendarPopup.time);
 	const value = useMemo(() => {
@@ -25,7 +25,6 @@ const TimeListItem = ({row, disabled}: IPopupItemProps) => {
 	}, [value])
 
 	const onClick = () => {
-		console.log(time, valueObj)
 		if (time.hours === valueObj.hours && time.minutes === valueObj.minutes) {
 			dispatch(addPopupTimeRow({time: "0:0", row: null}));
 			return;
@@ -40,8 +39,8 @@ const TimeListItem = ({row, disabled}: IPopupItemProps) => {
 				data={valueObj}
 				mainData={time}
 				onClickProp={onClick}
-				darkColor={styleConfig.colors.secondary?.dark}
-				lightColor={styleConfig.colors.secondary?.light}
+				darkColor={darkColor ? darkColor : styleConfig.colors.secondary?.dark}
+				lightColor={lightColor ? lightColor : styleConfig.colors.secondary?.light}
 				styles={{
 					fontSize: "14px"
 				}}

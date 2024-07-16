@@ -1,16 +1,13 @@
 import { GridColDef, GridEventListener, GridFilterModel, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridSlots, GridSortModel, useGridApiRef } from "@mui/x-data-grid";
 import Table from "../../../ui/Admin/Table/Table";
-import { useAddQueueRowMutation, useChangeQueueRowMutation, useDeleteQueueRowMutation, useGetQueueQuery, useGetUsersQuery } from "../../../../http/adminApi";
+import { useAddQueueRowMutation, useChangeQueueRowMutation, useDeleteQueueRowMutation, useGetQueueQuery, useGetUsersQuery } from "../../../../http/mainApi";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAppDispatch } from "../../../../store/hook";
-import { accessErrorAnalyzer } from "../../../../store/userSlice";
 import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
 import TableActionItem from "../../../ui/Admin/TableActionItem/TableActionItem";
 import { toast } from "sonner";
 import EditToolbar from "../../../ui/Admin/EditToolbar/EditToolbar";
 
 const QueueTable = () => {
-	const dispatch = useAppDispatch();
 	const apiRef = useGridApiRef();
 	const [rows, setRows] = useState<any>(null);
 	const [paginationModel, setPaginationModel] = useState({
@@ -22,20 +19,18 @@ const QueueTable = () => {
 	const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 	const [editRow, setEditRow] = useState<GridRowId | null>(null);
 
-	const { data, isSuccess, isLoading, isError, error, refetch } = useGetQueueQuery({
+	const { data, isSuccess, isLoading, isError, refetch } = useGetQueueQuery({
 		page: paginationModel.page + 1,
 		limit: paginationModel.pageSize,
 		...filterOptions,
 		...sortOptions
 	});
-	console.log(filterOptions)
 
 	const {
 		data: usersData,
 		isSuccess: usersIsSuccess,
 		isLoading: usersIsLoading,
-		isError: usersIsError,
-		error: usersError
+		isError: usersIsError
 	} = useGetUsersQuery({selectFields: ["id", "full_name"]});
 
 	const [
@@ -43,8 +38,7 @@ const QueueTable = () => {
 		{
 			isSuccess: changeQueueRowIsSuccess,
 			isLoading: changeQueueRowIsLoading,
-			isError: changeQueueRowIsError,
-			error: changeQueueRowError
+			isError: changeQueueRowIsError
 		}
 	] = useChangeQueueRowMutation();
 
@@ -53,8 +47,7 @@ const QueueTable = () => {
 		{
 			isSuccess: deleteQueueRowIsSuccess,
 			isLoading: deleteQueueRowIsLoading,
-			isError: deleteQueueRowIsError,
-			error: deleteQueueRowError
+			isError: deleteQueueRowIsError
 		}
 	] = useDeleteQueueRowMutation();
 
@@ -63,8 +56,7 @@ const QueueTable = () => {
 		{
 			isSuccess: addQueueRowIsSuccess,
 			isLoading: addQueueRowIsLoading,
-			isError: addQueueRowIsError,
-			error: addQueueRowError
+			isError: addQueueRowIsError
 		}
 	] = useAddQueueRowMutation();
 
@@ -145,7 +137,15 @@ const QueueTable = () => {
 				description: `Ошибка ${changeQueueRowIsError ? "редактирования" : deleteQueueRowIsError ? "удаления" : "добавления"} строки, попробуйте ещё раз`,
 			});
 		}
-	}, [changeQueueRowIsError, deleteQueueRowIsError])
+	}, [changeQueueRowIsError, deleteQueueRowIsError]);
+
+	useEffect(() => {
+		if (isError || usersIsError) {
+			toast.error('Ошибка!', {
+				description: `Ошибка получения данных, попробуйте обновить страницу`,
+			});
+		}
+	}, [isError, usersIsError]);
 
 	useEffect(() => {
 		if (changeQueueRowIsSuccess || deleteQueueRowIsSuccess || addQueueRowIsSuccess) {
@@ -154,7 +154,7 @@ const QueueTable = () => {
 				description: `Успешно ${changeQueueRowIsSuccess ? "отредактирована" : deleteQueueRowIsSuccess ? "удалена" : "добавлена"} строка`,
 			});
 		}
-	}, [changeQueueRowIsSuccess, deleteQueueRowIsSuccess])
+	}, [changeQueueRowIsSuccess, deleteQueueRowIsSuccess, addQueueRowIsSuccess])
 
 	const updatedColumns: GridColDef[] = [
 			{ field: 'id', type: "number", headerName: 'ID' },
@@ -164,14 +164,23 @@ const QueueTable = () => {
 				type: "singleSelect",
 				valueOptions:
 					usersData
-					? [{"value": -1, "label": ''}, ...usersData.map((row: {id: string, full_name: string}) => (
+					? [{"value": -1, "label": 'Нет'}, ...usersData.map((row: {id: string, full_name: string}) => (
 							{"value": row.id, "label": row.full_name}
 						))]
-					: [{"value": -1, "label": ''}],
+					: [{"value": -1, "label": 'Нет'}],
 				headerName: 'Пользователь',
 				editable: true
 			},
-			{ field: 'status', type: "boolean", headerName: 'Забронировано', editable: true },
+			{ field: 'status',
+				type: "singleSelect",
+				valueOptions: [
+					{value: 'free', label: 'Свободно'},
+					{value: 'booked', label: 'Забронировано'},
+					{value: 'passed', label: 'Пройдено'},
+					{value: 'missed', label: 'Пропущено'},
+					{value: 'process', label: 'На приёме'}],
+				headerName: 'Статус',
+				editable: true },
 			{
 			field: 'actions',
 			type: "actions",
@@ -231,12 +240,6 @@ const QueueTable = () => {
 		}
 	}, []);
 
-	useEffect(() => {
-		if (isError || usersIsError || changeQueueRowIsError || deleteQueueRowIsError || addQueueRowIsError) {
-			dispatch(accessErrorAnalyzer(error || usersError || changeQueueRowError || deleteQueueRowError || addQueueRowError));
-		}
-	}, [isError, usersIsError, changeQueueRowIsError, deleteQueueRowIsError, addQueueRowIsError])
-
 	const rowCountRef = useRef(isSuccess ? data?.total : 0);
 
 	const rowCount = useMemo(() => {
@@ -266,7 +269,7 @@ const QueueTable = () => {
 					toolbar: EditToolbar as GridSlots['toolbar'],
 				}}
 				slotProps={{
-					toolbar: { setRows, setRowModesModel, columns: {user_id: -1, queue_date: '', queue_time: ''} },
+					toolbar: { setRows, setRowModesModel, columns: {user_id: -1, queue_date: '', queue_time: '', status: 'free'} },
 				}}
 			/>
 		</div>

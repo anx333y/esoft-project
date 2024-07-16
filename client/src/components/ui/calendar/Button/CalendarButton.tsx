@@ -36,7 +36,7 @@ const CalendarButton = ({children, onClickProp, disabled, isLoading, sx, ...prop
 			>
 				{children}
 			</Button>
-			{isLoading && 
+			{isLoading &&
 				<CircularProgress
 					sx={{
 						color: styleConfig.colors.secondary?.dark,
@@ -44,7 +44,7 @@ const CalendarButton = ({children, onClickProp, disabled, isLoading, sx, ...prop
 						top: '50%',
 						left: '50%',
 						marginTop: '-12px',
-						marginLeft: '-12px'
+						marginLeft: '-12px',
 					}}
 					size={24}
 				/>}

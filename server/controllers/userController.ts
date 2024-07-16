@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { UserService } from "../services/userService";
 import { tokenData, userData } from "../types";
+import { getQueryParamsArrayOrString } from "../utils";
 
 class UserController {
 	userService: UserService;
@@ -14,17 +15,12 @@ class UserController {
 		try {
 			const page = typeof req.query.page === 'string' ? parseInt(req.query.page) : -1;
   		const limit = typeof req.query.limit === 'string' ? parseInt(req.query.limit) : -1;
-			const filterField = typeof req.query.filterField === 'string' ? String(req.query.filterField) : "";
-			const filterValue = typeof req.query.filterValue === 'string' ? String(req.query.filterValue) : "";
-			const sortField = typeof req.query.sortField === 'string' ? String(req.query.sortField) : "";
-			const sort = typeof req.query.sort === 'string' ? String(req.query.sort) : "";
-			let selectFields = typeof req.query.selectFields === 'string' ? [String(req.query.selectFields)] : req.query.selectFields;
-			if (!Array.isArray(selectFields)) {
-				selectFields = ['*']
-			} else {
-				selectFields = selectFields.map(field => String(field))
-			}
-			const users = await this.userService.getAllUsers(page, limit, filterField, filterValue, sortField, sort, selectFields);
+			const filterFields = getQueryParamsArrayOrString(req, 'filterField');
+			const filterValues = getQueryParamsArrayOrString(req, 'filterValue');
+			const sortFields = getQueryParamsArrayOrString(req, 'sortField');
+			const sorts = getQueryParamsArrayOrString(req, 'sort');
+			const selectFields = getQueryParamsArrayOrString(req, 'selectFields')
+			const users = await this.userService.getAllUsers({page, limit, filterFields, filterValues, sortFields, sorts, selectFields});
 			res.status(200).json(users);
 		} catch (error) {
 			res.status(500).json({error: (error as Error).message});

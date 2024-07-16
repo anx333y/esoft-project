@@ -24,3 +24,9 @@
 	height: 100%;
 	gap: 16px;
 }
+
+.user-calendar-button {
+	position: absolute;
+	right: 32px;
+	top: 32px;
+}
