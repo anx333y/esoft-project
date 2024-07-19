@@ -23,20 +23,24 @@ type IStyleConfig = {
 			}
 		}
 	};
-	heading: {
+	text: {
 		h1: string;
 		h2: string;
 		h3: string;
 		h4: string;
+		h5: string;
+		h6: string;
 	}
 }
 
 const styleConfig: IStyleConfig = {
-	"heading": {
+	"text": {
 		"h1": "28px",
 		"h2": "22px",
 		"h3": "18px",
 		"h4": "16px",
+		"h5": "14px",
+		"h6": "12px"
 	},
 	"colors": {
 		"primary": {

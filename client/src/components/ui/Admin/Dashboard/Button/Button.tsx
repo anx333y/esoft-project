@@ -1,12 +1,8 @@
-import { Button, ButtonProps, lighten } from "@mui/material";
 import "./Button.css";
 import styleConfig from "../../../../../style.config";
+import { Button, ButtonProps, lighten } from "@mui/material";
 
-type IDashboardButtonProps = ButtonProps & {
-
-};
-
-const DashboardButton = ({children, ...props}: IDashboardButtonProps) => {
+const DashboardButton = ({children, ...props}: ButtonProps) => {
 	return (
 		<div className="dashboard-button">
 			<Button

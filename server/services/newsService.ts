@@ -1,5 +1,5 @@
 import NewsModel from "../models/newsModel";
-import { newsData } from "../types";
+import { getAllQueryParams, newsData } from "../types";
 
 class NewsService {
 	newsModel: NewsModel;
@@ -8,8 +8,8 @@ class NewsService {
 		this.newsModel = newsModel;
 	}
 
-	async getAllNews() {
-		return this.newsModel.getAll();
+	async getAllNews(args: getAllQueryParams) {
+		return this.newsModel.getAll(args);
 	};
 	
 	async createNews(newsData: newsData) {

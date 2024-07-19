@@ -1,8 +1,8 @@
-import { UserModel } from "../models/userModel";
+import UserModel from "../models/userModel";
 import { getAllQueryParams, userData } from "../types";
 import mailService from "./mailService";
 import TokenService from "./tokenService";
-const jwt = require('jsonwebtoken');
+
 const bcrypt = require('bcrypt');
 const uuid = require('uuid');
 
@@ -20,7 +20,7 @@ class UserService {
 	};
 	
 	async createUser(userData: userData) {
-		const hashedPassword = await bcrypt.hash(userData.password, process.env.JWT_SALT_ROUNDS);
+		const hashedPassword = await bcrypt.hash(userData.password, Number(process.env.BCRYPT_SALT_ROUNDS));
 		const activationLink = uuid.v4();
 
 		const user = await this.userModel.create({...userData, password: hashedPassword, "activation_link": activationLink});
@@ -31,12 +31,12 @@ class UserService {
 			"full_name": user[0]["full_name"],
 			"email": user[0]["email"],
 			role: user[0].role,
-			isActivated: user[0]["is_activated"]
+			is_activated: user[0]["is_activated"]
 		};
 		
 		const tokens = this.tokenService.generateTokens(tokenUserData);
 		await this.tokenService.saveToken(tokenUserData.id, tokens.refreshToken);
-		return {...tokens, user: tokenUserData}
+		return {...tokens, user: tokenUserData}	
 	};
 
 
@@ -55,14 +55,14 @@ class UserService {
 	async checkUser(userData: userData) {
 		const user: userData[] = await this.userModel.getByField("email", userData.email);
 		if (!(user.length && await bcrypt.compare(userData.password, user[0].password))) {
-			throw new Error('User data is incorrect');
+			return;
 		}
 		const tokenUserData = {
 			"id": user[0].id,
 			"full_name": user[0]["full_name"],
 			"email": user[0]["email"],
 			role: user[0].role,
-			isActivated: user[0]["is_activated"]
+			is_activated: user[0]["is_activated"]
 		};
 
 		const tokens = this.tokenService.generateTokens(tokenUserData);
@@ -93,7 +93,7 @@ class UserService {
 			"full_name": user[0]["full_name"],
 			"email": user[0]["email"],
 			role: user[0].role,
-			isActivated: user[0]["is_activated"]
+			is_activated: user[0]["is_activated"]
 		};
 
 		const tokens = this.tokenService.generateTokens(tokenUserData);
@@ -110,5 +110,3 @@ class UserService {
 };
 
 export default UserService;
-
-export type { UserService };

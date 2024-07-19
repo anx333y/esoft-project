@@ -1,10 +1,9 @@
-import { ReactNode } from "react";
-import styleConfig from "../../../../../style.config";
 import "./DashboardItem.css";
+import styleConfig from "../../../../../style.config";
 
-type IDashboardItemProps = {
-	children: ReactNode;
-}
+import { IDashboardItemProps } from "../../../../../types";
+
+
 
 const DashboardItem = ({children}: IDashboardItemProps) => {
 	return (

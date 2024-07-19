@@ -1,17 +1,14 @@
 import "./TabsItem.css";
-import { Tab, TabProps } from "@mui/material";
-import { IGetInfoPropsReturn } from "../Admin/Admin";
+import { Tab } from "@mui/material";
 
-type ITabsItemProps = TabProps & {
-	label: string;
-	infoProps: IGetInfoPropsReturn;
-};
+import { ITabsItemProps } from "../../../../types";
 
 const TabsItem = ({label, infoProps, ...props}: ITabsItemProps) => {
 	return (
 		<div className="admin-tabs-item">
 			<Tab
-				label={label} {...infoProps}
+				label={label}
+				{...infoProps}
 				sx={{
 					width: "100%",
 				}}

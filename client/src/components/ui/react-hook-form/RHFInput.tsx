@@ -1,6 +1,8 @@
-import { Controller, FieldErrors, UseControllerProps } from "react-hook-form";
 import { FormHelperText, SxProps } from "@mui/material";
+
 import { ReactElement, cloneElement } from "react";
+
+import { Controller, FieldErrors, UseControllerProps } from "react-hook-form";
 
 type IRHFInputProps = UseControllerProps & {
 	errors?: FieldErrors;
@@ -11,21 +13,31 @@ type IRHFInputProps = UseControllerProps & {
 	renderComponent: ReactElement;
 };
 
-const RHFInput = ({control, errors, styles, name, placeholder, type = "text", rules, isRequired = true, renderComponent}: IRHFInputProps) => {
+const RHFInput = ({
+	control,
+	errors,
+	styles,
+	name,
+	placeholder,
+	type = "text",
+	rules,
+	isRequired = true,
+	renderComponent
+}: IRHFInputProps) => {
 	return (
 		<Controller
 			name={name}
 			control={control}
 			rules={{
+				required: isRequired ? "* Это обязательное поле": false,
 				...rules,
-				required: isRequired ? "* Это обязательное поле": false
 			}}
 			render={({field}) => (
 				<>
 					{cloneElement(renderComponent, {
 						placeholder,
 						type,
-						inputProps: {sx:styles, ...field},
+						inputProps: {sx: styles, ...field},
 						error: errors && !!errors[name]?.message
 					})}
 					<FormHelperText

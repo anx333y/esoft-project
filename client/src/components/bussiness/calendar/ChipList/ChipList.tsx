@@ -1,11 +1,12 @@
 import './ChipList.css';
 import styleConfig from '../../../../style.config';
 
+import { useMemo } from 'react';
+
 import Chip from "../Chip/Chip";
 
-import { useMemo } from 'react';
-import { getDaysAmountInAMonth, getCurrentMonthDays, getNextMonthDays, getPreviousMonthDays } from '../utils';
 import { IChipListProps } from '../../../../types';
+import { getCurrentMonthDays, getDaysAmountInAMonth, getNextMonthDays, getPreviousMonthDays } from '../../../../helpers/utils';
 
 const ChipList = ({ chipsData, startDate, size = "m", setIsPopupOpen }: IChipListProps) => {
 	const [panelMonth, panelYear] = useMemo(() => ([
@@ -19,7 +20,7 @@ const ChipList = ({ chipsData, startDate, size = "m", setIsPopupOpen }: IChipLis
 
 		const currentMonthDays = getCurrentMonthDays(panelYear, panelMonth, countOfCurrentMonthDays);
 		const prevMonthDays = getPreviousMonthDays(panelYear, panelMonth);
-    const nextMonthDays = getNextMonthDays(panelYear, panelMonth);
+		const nextMonthDays = getNextMonthDays(panelYear, panelMonth);
 
 		return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
 	}, [chipsData])

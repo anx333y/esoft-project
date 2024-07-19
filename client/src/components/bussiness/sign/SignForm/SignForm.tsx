@@ -1,26 +1,26 @@
-import { useForm } from "react-hook-form";
-import Title from "../../../ui/Title/Title";
-import SubmitButton from "../../../ui/sign/Button/Button";
 import "./SignForm.css";
-import RHFInput from "../../../ui/react-hook-form/RHFInput";
-import { useAppDispatch } from "../../../../store/hook";
-import { useLoginUserMutation, useRegisterUserMutation } from "../../../../http/signApi";
-import { useEffect } from "react";
-import { setUser } from "../../../../store/userSlice";
-import { IUserFields } from "../../../../types";
-import signErrors from "../../../../http/signErrors";
-import { NavLink, useNavigate } from "react-router-dom";
-import Input from "../../../ui/sign/Input/Input";
-import { lighten } from "@mui/material";
 import styleConfig from "../../../../style.config";
 
-type ISignFormProps = {
-	type: "in" | "up";
-};
+import { useEffect } from "react";
+
+import Text from "../../../ui/Text/Text";
+import SubmitButton from "../../../ui/sign/Button/Button";
+import RHFInput from "../../../ui/react-hook-form/RHFInput";
+import { setUser } from "../../../../store/userSlice";
+import signErrors from "../../../../http/signErrors";
+import Input from "../../../ui/sign/Input/Input";
+
+import { NavLink, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+
+import { useLoginUserMutation, useRegisterUserMutation } from "../../../../http/signApi";
+
+import { ISignFormProps, IUserFields } from "../../../../types";
+import { useAppDispatch } from "../../../../store/hook";
 
 const formText = {
 	"up": {
-		title: "Регистрация в МСТюмГУ",
+		Text: "Регистрация в МСТюмГУ",
 		buttonText: "Зарегистрироваться",
 		bottomText: (
 			<>
@@ -30,7 +30,7 @@ const formText = {
 		successMessage: "Регистрация прошла успешно!"
 	},
 	"in": {
-		title: "Войти в МСТюмГУ",
+		Text: "Войти в МСТюмГУ",
 		buttonText: "Войти",
 		bottomText: (
 			<>
@@ -71,6 +71,7 @@ const SignForm = ({type = "up"}: ISignFormProps) => {
 			data,
 			isSuccess,
 			isError,
+			isLoading,
 			error
 		}
 	] = type === "up" ? useRegisterUserMutation() : useLoginUserMutation();
@@ -103,19 +104,20 @@ const SignForm = ({type = "up"}: ISignFormProps) => {
 
 	return (
 		<form className="sign-form" onSubmit={handleSubmit(onSubmitForm)}>
-			<Title
+			<Text
 				variant="h1"
 				sx={{
-					color: styleConfig.colors.secondary.dark
+					color: styleConfig.colors.secondary.dark,
+					marginBottom: "16px"
 				}}
 			>
-				{formText[type].title}
-			</Title>
+				{formText[type].Text}
+			</Text>
 			{type === "up" &&
 				<RHFInput
 					name="full_name"
 					control={control}
-					renderComponent={<Input />}
+					renderComponent={<Input defaultValue="" />}
 					rules={{
 						required: "* Это обязательное поле",
 						minLength: {
@@ -135,7 +137,7 @@ const SignForm = ({type = "up"}: ISignFormProps) => {
 			<RHFInput
 				name="email"
 				control={control}
-				renderComponent={<Input />}
+				renderComponent={<Input defaultValue="" />}
 				rules={{
 					pattern: {
 						value: /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/,
@@ -149,7 +151,7 @@ const SignForm = ({type = "up"}: ISignFormProps) => {
 			<RHFInput
 				name="password"
 				control={control}
-				renderComponent={<Input />}
+				renderComponent={<Input defaultValue="" />}
 				rules={{
 					minLength: {
 						value: 8,
@@ -167,12 +169,10 @@ const SignForm = ({type = "up"}: ISignFormProps) => {
 			/>
 			<SubmitButton
 				sx={{
-					...ButtonStyles,
-					"&:hover": {
-						bgcolor: lighten(styleConfig.colors.secondary.dark, 0.1),
-					}
+					...ButtonStyles
 				}}
 				color="secondary"
+				isLoading={isLoading}
 			>
 				{formText[type].buttonText}
 			</SubmitButton>

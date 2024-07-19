@@ -1,19 +1,20 @@
-import { Dialog, DialogActions, DialogContent, DialogContentText, DialogProps, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput } from "@mui/material";
 import "./UserCalendarDialog.css";
-import CalendarButton from "../../../../ui/calendar/Button/CalendarButton";
-import { Dispatch, useEffect, useState } from "react";
-import { useAddUserCalendarMutation, useDeleteUserCalendarMutation, useValidateUserCalendarLinkMutation } from "../../../../../http/mainApi";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, IconButton, InputAdornment, InputLabel, OutlinedInput } from "@mui/material";
 import { Edit } from "@mui/icons-material";
-import { useForm } from "react-hook-form";
-import RHFInput from "../../../../ui/react-hook-form/RHFInput";
-import { IUserCalendar } from "../../../../../types";
-import { toast } from "sonner";
 
-type IUserCalendarDialogProps = DialogProps & {
-	setOpen: Dispatch<boolean>;
-	link: string | null;
-	userId: string;
-};
+import { useEffect, useState } from "react";
+
+import Button from "../../../../ui/Button/Button";
+import RHFInput from "../../../../ui/react-hook-form/RHFInput";
+
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+
+import { useAddUserCalendarMutation, useDeleteUserCalendarMutation, useValidateUserCalendarLinkMutation } from "../../../../../http/mainApi";
+
+import { IUserCalendar, IUserCalendarDialogProps } from "../../../../../types";
+
+
 
 const UserCalendarDialog = ({open, setOpen, link, userId}: IUserCalendarDialogProps) => {
 	const {
@@ -23,10 +24,10 @@ const UserCalendarDialog = ({open, setOpen, link, userId}: IUserCalendarDialogPr
 		handleSubmit,
 		control,
 		setValue
-	} = useForm({
+	} = useForm<IUserCalendar>({
 		defaultValues: {
 			link: ''
-		} as IUserCalendar,
+		},
 		values: {
 			link: link ? link : ''
 		}
@@ -127,7 +128,11 @@ const UserCalendarDialog = ({open, setOpen, link, userId}: IUserCalendarDialogPr
 	useEffect(() => {
 		if (addUserCalendarIsError || deleteUserCalendarIsError) {
 			toast.error('Ошибка!', {
-				description: `Ошибка ${addUserCalendarIsError ? 'обновления' : 'удаления'} пользовательского календаря, попробуйте ещё раз`
+				description: `Ошибка ${
+					addUserCalendarIsError
+						? 'обновления'
+						: 'удаления'
+					} пользовательского календаря, попробуйте ещё раз`
 			})
 		}
 	}, [addUserCalendarIsError, deleteUserCalendarIsError]);
@@ -167,7 +172,9 @@ const UserCalendarDialog = ({open, setOpen, link, userId}: IUserCalendarDialogPr
 							control={control}
 							errors={errors}
 							rules={{
-								validate: async (link: string) => await validateLink(link) || 'Ссылка iCal недействительна или содержит ошибки'
+								validate: async (link: string) => (
+									await validateLink(link) || 'Ссылка iCal недействительна или содержит ошибки'
+								)
 							}}
 							renderComponent={
 								<OutlinedInput
@@ -193,17 +200,17 @@ const UserCalendarDialog = ({open, setOpen, link, userId}: IUserCalendarDialogPr
 					</FormControl>
 				</DialogContent>
 				<DialogActions>
-					<CalendarButton onClickProp={handleClose}>Закрыть</CalendarButton>
+					<Button onClickProp={handleClose}>Закрыть</Button>
 					{
 						link &&
-						<CalendarButton
+						<Button
 							onClickProp={onDelete}
 							isLoading={deleteUserCalendarIsLoading}
 						>
 							Удалить каледнарь
-						</CalendarButton>
+						</Button>
 					}
-					<CalendarButton
+					<Button
 						isLoading={
 							addUserCalendarIsLoading
 							|| validateUserCalendarLinkIsLoading
@@ -211,7 +218,7 @@ const UserCalendarDialog = ({open, setOpen, link, userId}: IUserCalendarDialogPr
 						type="submit"
 						>
 							{link ? "Обновить календарь" : "Добавить календарь"}
-						</CalendarButton>
+						</Button>
 				</DialogActions>
 			</Dialog>
 		</div>

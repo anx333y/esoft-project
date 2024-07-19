@@ -1,12 +1,8 @@
-import { TextField, TextFieldProps } from "@mui/material";
 import "./Input.css";
 import styleConfig from "../../../../style.config";
+import { TextField, TextFieldProps } from "@mui/material";
 
-type IInputProps = TextFieldProps & {
-
-};
-
-const Input = ({sx, inputProps, ...props}: IInputProps) => {
+const Input = ({sx, inputProps, ...props}: TextFieldProps) => {
 	const thisInputPropsSx = inputProps && inputProps.sx ? inputProps.sx : {} ; 
 	return (
 		<div className="sign-input">
@@ -29,18 +25,6 @@ const Input = ({sx, inputProps, ...props}: IInputProps) => {
 					...inputProps,
 					sx: {
 						padding: "16px 20px",
-						'& .MuiInputBase-root': {
-							'& input': {
-								'&:-webkit-autofill': {
-									'-webkit-box-shadow': '0 0 0 100px transparent inset',
-									'-webkit-text-fill-color': 'inherit',
-								},
-								'&:-webkit-autofill:focus': {
-									'-webkit-box-shadow': '0 0 0 100px transparent inset',
-									'-webkit-text-fill-color': 'inherit',
-								},
-							},
-						},
 						...thisInputPropsSx
 					},
 				}}

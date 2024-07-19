@@ -14,3 +14,29 @@ body {
 	margin: 0;
 	padding: 0;
 }
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: #fff;
+}
+
+::-webkit-scrollbar-thumb {
+	background: rgb(239,111,108);
+	background: linear-gradient(57deg, rgba(239,111,108,1) 0%, rgba(47,128,237,1) 100%);
+	border: 2px solid #fff;
+	border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: linear-gradient(57deg, rgb(201, 93, 91) 0%, rgb(47, 123, 217) 100%);
+}
+
+.app-centered {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 100vh;
+}

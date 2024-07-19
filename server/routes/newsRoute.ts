@@ -1,3 +1,4 @@
+import NewsCommentsController from "../controllers/newsCommentsController";
 import NewsController from "../controllers/newsController";
 import express from "express";
 

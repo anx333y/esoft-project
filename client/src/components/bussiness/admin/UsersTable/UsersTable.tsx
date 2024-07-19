@@ -1,10 +1,16 @@
-import { GridColDef, GridEventListener, GridFilterModel, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridSortModel, useGridApiRef } from "@mui/x-data-grid";
-import Table from "../../../ui/Admin/Table/Table";
-import { useChangeUserMutation, useDeleteUserMutation, useGetUsersQuery } from "../../../../http/mainApi";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { GridColDef, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, useGridApiRef } from "@mui/x-data-grid";
 import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
+
+import { useEffect, useMemo, useRef, useState } from "react";
+
+import Table from "../../../ui/Admin/Table/Table";
 import TableActionItem from "../../../ui/Admin/TableActionItem/TableActionItem";
+
 import { toast } from "sonner";
+
+import { handleFilterChange, handleRowEditStop, handleRowModesModelChange, handleSortModelChange } from "../../../../helpers/utils";
+
+import { useChangeUserMutation, useDeleteUserMutation, useGetUsersQuery } from "../../../../http/mainApi";
 
 const UsersTable = () => {
 	const apiRef = useGridApiRef();
@@ -58,12 +64,6 @@ const UsersTable = () => {
 		})
 	}, [apiRef.current, data, isSuccess])
 
-	const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
-		if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-			event.defaultMuiPrevented = true;
-		}
-	};
-
 	const handleEditClick = (id: GridRowId) => () => {
 		setRowModesModel({ [id]: { mode: GridRowModes.Edit } });
 		setEditRow(id);
@@ -90,13 +90,16 @@ const UsersTable = () => {
 
 	const processRowUpdate = (newRow: GridRowModel) => {
 		const updatedRow = { ...newRow, isNew: false };
-		changeUser({id: newRow.id, content: {full_name: newRow.full_name, email: newRow.email, role: newRow.role, is_activated: newRow.is_activated}});
+		changeUser({
+			id: newRow.id,
+			content: {
+				full_name: newRow.full_name,
+				email: newRow.email,
+				role: newRow.role,
+				is_activated: newRow.is_activated
+			}});
 		refetch();
 		return updatedRow;
-	};
-
-	const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-		setRowModesModel(newRowModesModel);
 	};
 
 	useEffect(() => {
@@ -105,7 +108,11 @@ const UsersTable = () => {
 				setRowModesModel({ [editRow]: { mode: GridRowModes.Edit } });
 			}
 			toast.error('Ошибка!', {
-				description: `Ошибка ${changeUserIsError ? "редактирования" : "удаления"} строки, попробуйте ещё раз`,
+				description: `Ошибка ${
+					changeUserIsError
+						? "редактирования"
+						: "удаления"
+					} строки, попробуйте ещё раз`,
 			});
 		}
 	}, [changeUserIsError, deleteUserIsError]);
@@ -122,7 +129,11 @@ const UsersTable = () => {
 		if (changeUserIsSuccess || deleteUserIsSuccess) {
 			changeUserIsSuccess && setEditRow(null);
 			toast.success('Успех!', {
-				description: `Успешно ${changeUserIsSuccess ? "отредактирована" : "удалена"} строка`,
+				description: `Успешно ${
+					changeUserIsSuccess
+						? "отредактирована"
+						: "удалена"
+					} строка`,
 			});
 		}
 	}, [changeUserIsSuccess, deleteUserIsSuccess])
@@ -179,30 +190,6 @@ const UsersTable = () => {
 			}
 		}];
 
-	const handleFilterChange = useCallback((filterModel: GridFilterModel) => {
-		const filterInfo = filterModel.items[0] || null;
-		if (filterInfo && filterInfo.field && filterInfo.value) {
-			setFilterOptions({filterField: filterInfo.field, filterValue: filterInfo.value});
-		} else {
-			setFilterOptions({});
-		}
-	}, []);
-
-	const handleSortModelChange = useCallback((sortModel: GridSortModel) => {
-		const sortInfo = sortModel[0] || null;
-		if (sortInfo && sortInfo.field && sortInfo.sort) {
-			setSortOptions({sortField: sortInfo.field, sort: sortInfo.sort});
-		} else {
-			setSortOptions({});
-		}
-	}, []);
-
-	// useEffect(() => {
-	// 	if (isError || changeUserIsError || deleteUserIsError) {
-	// 		dispatch(accessErrorAnalyzer(error || changeUserError || deleteUserError));
-	// 	}
-	// }, [isError, changeUserIsError, deleteUserIsError])
-
 	const rowCountRef = useRef(isSuccess ? data?.total : 0);
 
 	const rowCount = useMemo(() => {
@@ -222,10 +209,10 @@ const UsersTable = () => {
 				loading={isLoading}
 				paginationModel={paginationModel}
 				onPaginationModelChange={setPaginationModel}
-				onFilterModelChange={handleFilterChange}
-				onSortModelChange={handleSortModelChange}
+				onFilterModelChange={handleFilterChange(setFilterOptions)}
+				onSortModelChange={handleSortModelChange(setSortOptions)}
 				rowModesModel={rowModesModel}
-				onRowModesModelChange={handleRowModesModelChange}
+				onRowModesModelChange={handleRowModesModelChange(setRowModesModel)}
 				onRowEditStop={handleRowEditStop}
 				processRowUpdate={processRowUpdate}
 			/>

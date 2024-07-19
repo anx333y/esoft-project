@@ -1,12 +1,9 @@
-import styleConfig from "../../../../../style.config";
-import CalendarChip from "../../../../ui/calendar/Chip/CalendarChip";
 import "./TimeGroupItem.css";
+import styleConfig from "../../../../../style.config";
 
-type ITimeGroupItemProps = {
-	groupKey: string;
-	onClickProp: any;
-	state: string | null;
-}
+import CalendarChip from "../../../../ui/calendar/Chip/CalendarChip";
+
+import { ITimeGroupItemProps } from "../../../../../types";
 
 const TimeGroupItem = ({groupKey, state, onClickProp}: ITimeGroupItemProps) => {
 	const onClick = () => {
@@ -15,6 +12,7 @@ const TimeGroupItem = ({groupKey, state, onClickProp}: ITimeGroupItemProps) => {
 		}
 		return () => onClickProp(groupKey)
 	};
+	
 	return (
 		<div className="popup-timegroup-item">
 			<CalendarChip

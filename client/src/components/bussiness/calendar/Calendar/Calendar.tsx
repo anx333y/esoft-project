@@ -1,15 +1,19 @@
 import './Calendar.css';
+import Skeleton from '../../../ui/Skeleton/Skeleton';
+
+import { createContext, useEffect, useState } from 'react';
+
 import Carousel from "../Carousel/Carousel";
 import ChipList from "../ChipList/ChipList";
-import { createContext, useEffect, useState } from 'react';
 import Popup from '../Popup/Popup';
+
+import { toast } from 'sonner';
 
 import { useAppDispatch, useAppSelector } from '../../../../store/hook';
 import { IDate, ICalendarProps, ICheckedDateContext, IPanel } from '../../../../types';
+
 import { setCalendarData } from '../../../../store/calendarSlice';
-import { Skeleton } from '@mui/material';
 import { useGetQueueQuery } from '../../../../http/mainApi';
-import { toast } from 'sonner';
 
 export const CheckedDateContext = createContext<ICheckedDateContext>({
 	checkedDate: {
@@ -70,7 +74,13 @@ const Calendar = ({fullDate, size = 'm'}: ICalendarProps) => {
 				<div className="calendar-main">
 					<Carousel panel={{panelMonthYear, setPanelMonthYear}} size={size}/>
 					{
-						isSuccess && <ChipList size={size} chipsData={panelMonthYear} startDate={fullDate} setIsPopupOpen={setIsPopupOpen} />
+						isSuccess &&
+							<ChipList
+								size={size}
+								chipsData={panelMonthYear}
+								startDate={fullDate}
+								setIsPopupOpen={setIsPopupOpen}
+							/>
 					}
 				</div>
 				{isPopupOpen && <Popup size={size} />}

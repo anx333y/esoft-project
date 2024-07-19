@@ -1,10 +1,9 @@
-import { Link } from "react-router-dom";
 import "./SidebarItem.css";
-import { Tab, TabProps } from "@mui/material";
+import { Tab } from "@mui/material";
 
-type ISidebarItemProps = TabProps & {
-	to: string;
-}
+import { Link } from "react-router-dom";
+
+import { ISidebarItemProps } from "../../../../types";
 
 const SidebarItem = ({label, to, sx, value, ...props}: ISidebarItemProps) => {
 	return (

@@ -1,12 +1,7 @@
 import { DataGrid, DataGridProps, getGridBooleanOperators, getGridNumericOperators, getGridSingleSelectOperators, getGridStringOperators } from '@mui/x-data-grid';
 import { useMemo } from 'react';
 
-type ITableProps = DataGridProps & {
-	// page: number;
-	// pageSize: number;
-}
-
-const Table = ({rows, columns, pageSizeOptions = [1, 5, 10, 20, 50, 100], ...props}: ITableProps) => {
+const Table = ({rows, columns, pageSizeOptions = [1, 5, 10, 20, 50, 100], ...props}: DataGridProps) => {
 	const updatedColumns = useMemo(() => {
 		return columns.map((col) => {
 			if (col.type === 'actions') {

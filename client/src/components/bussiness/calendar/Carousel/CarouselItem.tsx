@@ -1,5 +1,6 @@
 import './CarouselItem.css';
 import styleConfig from '../../../../style.config';
+
 import { ICarouselItemProps } from '../../../../types';
 
 const CarouselItem = ({children, size = 'm'}: ICarouselItemProps) => {
@@ -11,7 +12,7 @@ const CarouselItem = ({children, size = 'm'}: ICarouselItemProps) => {
 			style={
 				{
 					...styleConfig.sizes[size].carouselItem,
-					color: styleConfig.colors.primary.dark,
+					color: styleConfig.colors.secondary.dark,
 				}
 			}
 		>

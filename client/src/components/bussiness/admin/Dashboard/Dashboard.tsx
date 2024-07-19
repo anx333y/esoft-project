@@ -1,17 +1,20 @@
-import DashboardItem from "../../../ui/Admin/Dashboard/DashboardItem/DashboardItem";
 import "./Dashboard.css";
 import styleConfig from "../../../../style.config";
-import Title from "../../../ui/Title/Title";
-import { useChangeQueueRowMutation, useGetQueueQuery } from "../../../../http/mainApi";
-import { getISODate } from "../../calendar/utils";
+
 import { useEffect, useMemo } from "react";
+
+import DashboardItem from "../../../ui/Admin/Dashboard/DashboardItem/DashboardItem";
+import Text from "../../../ui/Text/Text";
 import { toast } from "sonner";
-import { IQueue } from "../../../../types";
-import { formatPeople } from "../../../../helpers/utils";
 import DashboardNext from "../DashboardNext/DashboardNext";
 import DashboardVisitorPanel from "../DashboardVisitorPanel/DashboardVisitorPanel";
 import QueueTimer from "../../queue/Queue/QueueTimer";
 import ExplicitText from "../../../ui/Admin/Dashboard/ExplicitText/ExplicitText";
+
+import { formatPeople, getFilteredByStatusQueueList } from "../../../../helpers/utils";
+import { getISODate } from "../../../../helpers/utils";
+
+import { useChangeQueueRowMutation, useGetQueueQuery } from "../../../../http/mainApi";
 
 const Dashboard = () => {
 	const todayISODate = useMemo(() => {
@@ -34,32 +37,7 @@ const Dashboard = () => {
 	] = useChangeQueueRowMutation();
 
 	const {passedQueue, bookedQueue, missedQueue, processQueue} = useMemo(() => {
-		const queue = {
-			passedQueue: [] as IQueue[],
-			bookedQueue: [] as IQueue[],
-			missedQueue: [] as IQueue[],
-			processQueue: [] as IQueue[]
-		}
-		if (!isSuccess || !data) {
-			return queue;
-		}
-		data.forEach((row: IQueue) => {
-			switch (row.status) {
-				case 'passed':
-					queue.passedQueue.push(row);
-					break;
-				case 'booked':
-					queue.bookedQueue.push(row);
-					break;
-				case 'missed':
-					queue.missedQueue.push(row);
-					break;
-				case 'process':
-					queue.processQueue.push(row);
-					break;
-			}
-		});
-		return queue;
+		return getFilteredByStatusQueueList(data, isSuccess);
 	}, [data, isSuccess])
 
 	const handleClickNext = () => {
@@ -89,7 +67,11 @@ const Dashboard = () => {
 	useEffect(() => {
 		if (changeQueueRowIsError || isError) {
 			toast.error('Ошибка!', {
-				description: `Ошибка ${isError ? 'получения данных, попробуйте перезагрузить страницу' : 'призыва следующего, попробуйте ещё раз'}`,
+				description: `Ошибка ${
+					isError
+						? 'получения данных, попробуйте перезагрузить страницу'
+						: 'призыва следующего, попробуйте ещё раз'
+					}`,
 			});
 		}
 	}, [changeQueueRowIsError, isError])
@@ -104,12 +86,12 @@ const Dashboard = () => {
 
 	return (
 		<div className="admin-dashboard">
-			<Title variant="h2">
+			<Text font="h2" sx={{width: "100%"}}>
 				<QueueTimer />
-			</Title>
+			</Text>
 			<DashboardItem>
-				<Title
-					variant="h4"
+				<Text
+					font="h4"
 					sx={{
 						color: styleConfig.colors.secondary?.light,
 						fontWeight: 500,
@@ -117,10 +99,10 @@ const Dashboard = () => {
 					}}
 				>
 					Статистика
-				</Title>
+				</Text>
 				<div className="admin-dashboard-stats">
 					<div className="admin-dashboard-stats-item">
-						Сегодня ожидается:
+						<span>Сегодня ожидается:</span>
 						<ExplicitText
 							bgColor={styleConfig.colors.success.main}
 							color="#fff"
@@ -129,7 +111,7 @@ const Dashboard = () => {
 						</ExplicitText>
 					</div>
 					<div className="admin-dashboard-stats-item">
-						Сегодня пришло:
+						<span>Сегодня пришло:</span>
 						<ExplicitText>
 							{formatPeople(passedQueue.length)}
 						</ExplicitText>
@@ -137,8 +119,8 @@ const Dashboard = () => {
 				</div>
 			</DashboardItem>
 			<DashboardItem>
-				<Title
-					variant="h4"
+				<Text
+					font="h4"
 					sx={{
 						color: styleConfig.colors.secondary?.light,
 						fontWeight: 500,
@@ -146,12 +128,12 @@ const Dashboard = () => {
 					}}
 				>
 					Вызов следующего
-				</Title>
+				</Text>
 				<DashboardNext bookedQueue={bookedQueue} handleClickNext={handleClickNext}/>
 			</DashboardItem>
 			<DashboardItem>
-				<Title
-					variant="h4"
+				<Text
+					font="h4"
 					sx={{
 						color: styleConfig.colors.secondary?.light,
 						fontWeight: 500,
@@ -159,7 +141,7 @@ const Dashboard = () => {
 					}}
 				>
 					Панель управления зашедшим
-				</Title>
+				</Text>
 				{
 					!!processQueue && (
 						<DashboardVisitorPanel

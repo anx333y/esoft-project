@@ -1,13 +1,17 @@
 import './Chip.css';
 import styleConfig from '../../../../style.config';
 import { CheckedDateContext } from '../Calendar/Calendar';
-import { getTimeStampFromDateObj, isDateInData, isDatesEqual, isInactive } from '../utils';
 
 import { useContext, useMemo } from "react";
-import { addPopupDate } from '../../../../store/calendarPopupSlice';
+
 import CalendarChip from '../../../ui/calendar/Chip/CalendarChip';
-import { useAppDispatch, useAppSelector } from '../../../../store/hook';
+
+import { addPopupDate } from '../../../../store/calendarPopupSlice';
+
 import { IChipProps } from '../../../../types';
+import { getTimeStampFromDateObj, isDateInData, isDatesEqual, isInactive } from '../../../../helpers/utils';
+import { useAppDispatch, useAppSelector } from '../../../../store/hook';
+
 
 
 const Chip = ({
@@ -18,10 +22,8 @@ const Chip = ({
 	setIsPopupOpen
 }: IChipProps) => {
 	const {checkedDate, setCheckedDate} = useContext(CheckedDateContext);
-	// console.log('chip')
 	const dispatch = useAppDispatch();
 	const data = useAppSelector((state) => state.calendar.data);
-	// console.log(data)
 	
 	const isDisabled = useMemo(() => {
 		return isDateInData(data, fullDate) || isInactive(fullDate, startDate)
@@ -33,7 +35,6 @@ const Chip = ({
 		}
 
 		if (isDatesEqual(checkedDate, fullDate)) {
-			// console.log(checkedDate, fullDate)
 			setCheckedDate({
 				"year": 0,
 				"month": 0,

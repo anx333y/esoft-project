@@ -1,13 +1,16 @@
-import { Tabs } from "@mui/material";
-import SidebarItem from "../SidebarItem/SidebarItem";
 import "./Sidebar.css";
+import { Tabs } from "@mui/material";
+
+import SidebarItem from "../SidebarItem/SidebarItem";
+
 import { useRouteMatch } from "../../../../helpers/hooks";
+import { useAppSelector } from "../../../../store/hook";
 
 
 const Sidebar = () => {
-	const routeMatch = useRouteMatch(['/', '/calendar', '/admin']);
+	const userRole = useAppSelector(state => state.user.role);
+	const routeMatch = useRouteMatch(['/', '/calendar', '/admin', '/news']);
 	const currentTab = routeMatch?.pattern?.path;
-	console.log(currentTab)
 
 	return (
 		<div className="sidebar">
@@ -33,10 +36,18 @@ const Sidebar = () => {
 					value="/calendar"
 				/>
 				<SidebarItem
-					label="Админ"
-					to="/admin"
-					value="/admin"
+					label="Новости"
+					to="/news"
+					value="/news"
 				/>
+				{
+					userRole === 'admin' &&
+						<SidebarItem
+							label="Админ"
+							to="/admin"
+							value="/admin"
+					/>
+				}
 			</Tabs>
 		</div>
 	)

@@ -4,10 +4,14 @@ import './index.css'
 import './fonts/fonts.css'
 import { Provider } from 'react-redux'
 import store from './store/store.ts'
+import appTheme from './themes/appTheme.ts'
+import { ThemeProvider } from '@mui/material'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
 	
-	<Provider store={store}>
-		<App />
-	</Provider>
+	<ThemeProvider theme={appTheme}>
+		<Provider store={store}>
+				<App />
+		</Provider>
+	</ThemeProvider>
 )

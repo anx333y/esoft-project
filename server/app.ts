@@ -23,6 +23,12 @@ import UserCalendarController from "./controllers/userCalendarController";
 import UserCalendarModel from "./models/userCalendarModel";
 import UserCalendarService from "./services/userCalendarService";
 import userCalendarRoute from "./routes/userCalendarRoute";
+import authorizeRole from "./middlewares/authorizeRole";
+import authorizeIsActivated from "./middlewares/authorizeIsActivated";
+import NewsCommentsModel from "./models/newsCommentsModel";
+import NewsCommentsService from "./services/newsCommentsService";
+import NewsCommentsController from "./controllers/newsCommentsController";
+import newsCommentsRoute from "./routes/newsCommentsRoute";
 
 
 const userModel = new UserModel;
@@ -37,12 +43,13 @@ const newsModel = new NewsModel;
 const newsService = new NewsService(newsModel);
 const newsController = new NewsController(newsService);
 
+const newsCommentsModel = new NewsCommentsModel;
+const newsCommentsService = new NewsCommentsService(newsCommentsModel);
+const newsCommentsController = new NewsCommentsController(newsCommentsService);
+
 const userCalendarModel = new UserCalendarModel;
 const userCalendarService = new UserCalendarService(userCalendarModel);
 const userCalendarController = new UserCalendarController(userCalendarService);
-
-const SERVER_PORT = 3000;
-const SERVER_URL = 'localhost';
 
 const app = express();
 
@@ -52,15 +59,20 @@ app.use(cors({
 	credentials: true,
 	origin: process.env.CLIENT_URL
 }))
-app.use('/api', userRoute(userController));
+
 app.use('/api', signRoute(userController));
-app.use('/api', userCalendarRoute(userCalendarController));
-app.use('/api', authenticateJWT, queueRoute(queueController));
-app.use('/api', authenticateJWT, newsRoute(newsController));
+app.use('/api', newsCommentsRoute(newsCommentsController));
+app.use('/api', authenticateJWT, authorizeIsActivated, queueRoute(queueController));
+app.use('/api', authenticateJWT, authorizeIsActivated, newsRoute(newsController));
+app.use('/api', authenticateJWT, authorizeIsActivated, userCalendarRoute(userCalendarController));
+app.use('/api', authenticateJWT, authorizeRole(['admin']), authorizeIsActivated, userRoute(userController));
 
 queueService.remindUserRecording();
-const job = schedule.scheduleJob('0 * * * *', queueService.remindUserRecording.bind(queueService));
+const job = schedule.scheduleJob('* * * * *', queueService.remindUserRecording.bind(queueService));
 
-app.listen(SERVER_PORT, SERVER_URL, () => {
-	console.log('started on link: https://localhost:3000')
+const SERVER_PORT = Number(process.env.SERVER_PORT) || 3000;
+const SERVER_HOST = process.env.SERVER_HOST || 'localhost';
+
+app.listen(SERVER_PORT, SERVER_HOST, () => {
+		console.log(`started on link: http://${SERVER_HOST}:${SERVER_PORT}`)
 });

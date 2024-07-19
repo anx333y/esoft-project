@@ -1,11 +1,8 @@
-import { IQueue } from "../../../../types";
-import DashboardButton from "../../../ui/Admin/Dashboard/Button/Button";
 import "./DashboardNext.css";
 
-type IDashboardNextProps = {
-	bookedQueue: IQueue[] | [];
-	handleClickNext: () => void;
-}
+import DashboardButton from "../../../ui/Admin/Dashboard/Button/Button";
+
+import { IDashboardNextProps } from "../../../../types";
 
 const DashboardNext = ({bookedQueue, handleClickNext}: IDashboardNextProps) => {
 	return (

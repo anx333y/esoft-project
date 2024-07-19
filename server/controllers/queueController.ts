@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
-import { UserService } from "../services/userService";
 import QueueService from "../services/queueService";
-import { getQueryParamsArrayOrString } from "../utils";
+import { getQueryParams } from "../utils";
 
 class QueueController {
 	queueService: QueueService;
@@ -12,14 +11,7 @@ class QueueController {
 
 	getAllQueue = async (req: Request, res: Response) => {
 		try {
-			const page = typeof req.query.page === 'string' ? parseInt(req.query.page) : -1;
-  		const limit = typeof req.query.limit === 'string' ? parseInt(req.query.limit) : -1;
-			const filterFields = getQueryParamsArrayOrString(req, 'filterField');
-			const filterValues = getQueryParamsArrayOrString(req, 'filterValue');
-			const sortFields = getQueryParamsArrayOrString(req, 'sortField');
-			const sorts = getQueryParamsArrayOrString(req, 'sort');
-			const selectFields = getQueryParamsArrayOrString(req, 'selectFields')
-			const queue = await this.queueService.getAllQueue({page, limit, filterFields, filterValues, sortFields, sorts, selectFields});
+			const queue = await this.queueService.getAllQueue(getQueryParams(req));
 			res.status(200).json(queue);
 		} catch (error) {
 			res.status(500).json({error: (error as Error).message});
@@ -30,7 +22,7 @@ class QueueController {
 		try {
 			const queueRowData = req.body;
 			if (!queueRowData["queue_date"] || !queueRowData["queue_time"]) {
-				res.status(400).json({error: 'Неполные данные'});
+				res.status(400).json({error: 'Incomplete data'});
 				return;
 			}
 			const newQueue = await this.queueService.createQueueRow(req.body);
@@ -40,7 +32,6 @@ class QueueController {
 		}
 	};
 
-	// Работа с одним пользователем
 	getQueueRowById = async (req: Request, res: Response) => {
 		try {
 			const queueRow = await this.queueService.getQueueRowById(req.params.queueId);
@@ -89,8 +80,22 @@ class QueueController {
 		}
 	};
 
+	createQueueArray = async (req: Request, res: Response) => {
+		try {
+			const args = {
+				startDate: req.body.startDate || '',
+				selectDays: req.body.selectDays || [0, 1, 2, 3, 4],
+				startTime: req.body.startTime || '13:30:00',
+				endTime: req.body.endTime || '17:00:00',
+				delay: req.body.delay || 3
+			}
+			const newQueueArr = await this.queueService.createQueueArray(args);
+			res.status(201).json(newQueueArr);
+		} catch (error) {
+			res.status(500).json({error: (error as Error).message});
+		}
+	};
+
 };
 
 export default QueueController;
-
-export type { QueueController };

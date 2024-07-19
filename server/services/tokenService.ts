@@ -1,5 +1,4 @@
 import TokenModel from "../models/tokenModel";
-import { tokenData } from "../types";
 
 const jwt = require('jsonwebtoken');
 

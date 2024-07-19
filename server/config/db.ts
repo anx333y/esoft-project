@@ -1,3 +1,5 @@
+import knex from "knex";
+
 const dbConfig = {
 	client: "pg",
 	connection: {
@@ -14,4 +16,16 @@ const dbConfig = {
 	}
 };
 
-export default dbConfig;
+export const knexPool = knex({
+	client: dbConfig.client,
+	connection: {
+		...dbConfig.connection
+	},
+	pool: {
+		min: dbConfig.pool.min,
+		max: dbConfig.pool.max,
+		idleTimeoutMillis: dbConfig.pool.idleTimeoutMillis
+	}
+});
+
+export default knexPool;

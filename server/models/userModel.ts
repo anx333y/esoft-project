@@ -1,21 +1,16 @@
-import knex from "knex";
-import dbConfig from "../config/db";
-import { getAllQueryParams, queueData, userData } from "../types";
-
-const knexPool = knex({
-	client: dbConfig.client,
-	connection: {
-		...dbConfig.connection
-	},
-	pool: {
-		min: dbConfig.pool.min,
-		max: dbConfig.pool.max,
-		idleTimeoutMillis: dbConfig.pool.idleTimeoutMillis
-	}
-});
+import knexPool from "../config/db";
+import { getAllQueryParams, userData } from "../types";
 
 class UserModel {
-	async getAll({page = -1, limit = -1, filterFields = [], filterValues = [], sortFields = [], sorts = [], selectFields = []}: getAllQueryParams) {
+	async getAll({
+		page = -1,
+		limit = -1,
+		filterFields = [],
+		filterValues = [],
+		sortFields = [],
+		sorts = [],
+		selectFields = []
+	}: getAllQueryParams) {
 		if (!selectFields.length) {
 			selectFields = ["id", "full_name", "email", "role", "is_activated"];
 		}
@@ -98,5 +93,3 @@ class UserModel {
 };
 
 export default UserModel;
-
-export type { UserModel };

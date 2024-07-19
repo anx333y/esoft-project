@@ -1,5 +1,6 @@
 .main-layout-content {
 	display: flex;
+	overflow-y: auto;
 }
 
 .main-layout-outlet-wrapper {

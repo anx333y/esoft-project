@@ -1,12 +1,11 @@
 import "./QueueList.css";
-import QueueCard from "../QueueCard/QueueCard";
-import { IQueue, IUserFields } from "../../../../types";
-import { Skeleton } from "@mui/material";
-// import { getISODate } from "../../calendar/utils";
 
-type IQueueListProps = {
-	list?: IQueue[] | null;
-}
+import QueueCard from "../QueueCard/QueueCard";
+import Skeleton from "../../../ui/Skeleton/Skeleton";
+
+import { IQueue, IQueueListProps, IUserFields } from "../../../../types";
+
+
 
 const QueueList = ({list = null}: IQueueListProps) => {
 

@@ -5,12 +5,12 @@ const QueueTimer = () => {
 
 	useEffect(() => {
 		const timerID = setInterval(() => {
-      setToday(new Date());
-    }, 1000);
+			setToday(new Date());
+		}, 1000);
 
-    return () => {
-      clearInterval(timerID);
-    };
+		return () => {
+			clearInterval(timerID);
+		};
 	}, [])
 	return (
 		<>

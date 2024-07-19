@@ -1,5 +1,5 @@
-import Queue from "../../components/bussiness/queue/Queue/Queue";
 import "./QueuePage.css";
+import Queue from "../../components/bussiness/queue/Queue/Queue";
 
 const QueuePage = () => {
 

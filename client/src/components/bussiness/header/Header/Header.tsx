@@ -1,48 +1,20 @@
-import { IconButton, lighten } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../../store/hook";
-import Title from "../../../ui/Title/Title";
-import Logout from "@mui/icons-material/Logout";
 import "./Header.css";
-import { logout } from "../../../../store/userSlice";
-import { useLogoutUserMutation } from "../../../../http/signApi";
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
-import { toast } from "sonner";
 import styleConfig from "../../../../style.config";
+import { IconButton, lighten } from "@mui/material";
+import Logout from "@mui/icons-material/Logout";
+
+import Text from "../../../ui/Text/Text";
+
+import { useAppSelector } from "../../../../store/hook";
+import { useLogout } from "../../../../helpers/hooks";
 
 const Header = () => {
-	const dispatch = useAppDispatch();
-	const navigate = useNavigate();
 	const userFullName = useAppSelector((state) => state.user["full_name"]);
-	const [
-		logoutUser,
-		{
-			isSuccess: logoutUserIsSuccess,
-			isError: logoutUserIsError
-		}
-	] = useLogoutUserMutation();
+	const handleLogout = useLogout();
 
 	const handleClickLogout = () => {
-		dispatch(logout());
-		logoutUser({});
-		navigate('/login');
+		handleLogout()
 	};
-
-	useEffect(() => {
-		if (logoutUserIsSuccess) {
-			toast.success('Успех!', {
-				description: 'Вы успешно вышли из аккаунта'
-			})
-		}
-	}, [logoutUserIsSuccess]);
-
-	useEffect(() => {
-		if (logoutUserIsError) {
-			toast.error('Ошибка!', {
-				description: 'Ошибка выхода из аккаунта, попробуйте перезагрузить страницу и попробовать снова'
-			})
-		}
-	}, [logoutUserIsError])
 
 	return (
 		<div className="header">
@@ -51,31 +23,31 @@ const Header = () => {
 			</div>
 			<div className="header-main">
 				<div className="header-main-left">
-					<Title
-						variant="h2"
+					<Text
+						font="h2"
 						component="h1"
 						sx={{
 							color: styleConfig.colors.error.main
 						}}
 					>
 						Migration
-					</Title>
-					<Title
-						variant="h2"
+					</Text>
+					<Text
+						font="h2"
 						component="h1"
 						sx={{
 							color: styleConfig.colors.secondary.dark
 						}}
 					>
 						UTMN
-					</Title>
+					</Text>
 				</div>
 				<div className="header-main-right">
 					{
 						userFullName &&
 						<>
-							<Title
-								variant="h4"
+							<Text
+								font="h4"
 								component="span"
 								sx={{
 									fontWeight: 400,
@@ -83,7 +55,7 @@ const Header = () => {
 								}}
 							>
 								{userFullName || ""}
-							</Title>
+							</Text>
 							<IconButton
 								onClick={handleClickLogout}
 							>

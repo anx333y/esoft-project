@@ -1,23 +1,9 @@
-import knex from "knex";
-import dbConfig from "../config/db";
+import knexPool from "../config/db";
 import { userCalendarData } from "../types";
-
-const knexPool = knex({
-	client: dbConfig.client,
-	connection: {
-		...dbConfig.connection
-	},
-	pool: {
-		min: dbConfig.pool.min,
-		max: dbConfig.pool.max,
-		idleTimeoutMillis: dbConfig.pool.idleTimeoutMillis
-	}
-});
 
 class UserCalendarModel {
 	async getAll() {
-		const query = knexPool
-			.from("user_calendar");
+		const query = knexPool.from("user_calendar");
 		const rows = await query;
 		return rows;
 	};

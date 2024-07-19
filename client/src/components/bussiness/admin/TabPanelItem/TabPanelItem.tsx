@@ -1,9 +1,6 @@
 import "./TabPanelItem.css";
-import { ReactNode } from "react";
 
-type ITabPanelItemProps = {
-	children: ReactNode;
-}
+import { ITabPanelItemProps } from "../../../../types";
 
 const TabPanelItem = ({children}: ITabPanelItemProps) => {
 	return (

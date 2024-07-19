@@ -1,10 +1,6 @@
 import TabPanelItem from "../TabPanelItem/TabPanelItem";
 
-type TabPanelProps = {
-	children?: React.ReactNode;
-	index: number;
-	value: number;
-};
+import { TabPanelProps } from "../../../../types";
 
 const TabPanel = (props: TabPanelProps) => {
 	const { children, value, index, ...other } = props;
@@ -18,7 +14,12 @@ const TabPanel = (props: TabPanelProps) => {
 			className="admin-tabpanel"
 			{...other}
 		>
-			{value === index && <TabPanelItem>{children}</TabPanelItem>}
+			{
+				value === index &&
+					<TabPanelItem>
+						{children}
+					</TabPanelItem>
+			}
 		</div>
 	);
 }

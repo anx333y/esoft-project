@@ -1,4 +1,4 @@
-import { UserController } from "../controllers/userController";
+import UserController from "../controllers/userController";
 import express from "express";
 
 export default (userController: UserController) => {

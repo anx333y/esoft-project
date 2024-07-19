@@ -1,16 +1,13 @@
-import { Button, ButtonProps, CircularProgress } from "@mui/material";
-import { ReactNode } from "react";
-import styleConfig from "../../../../style.config";
-import "./CalendarButton.css";
+import "./Button.css";
+import styleConfig from "../../../style.config";
+import { CircularProgress } from "@mui/material";
+import MuiButton from "@mui/material/Button";
 
-// type ConditionalArrowFunction<R = void> = () => R;
-type ICalendarButtonProps = ButtonProps & {
-	children?: ReactNode;
-	onClickProp?: any;
-	isLoading?: boolean;
-}
+import { ICalendarButtonProps } from "../../../types";
 
-const CalendarButton = ({children, onClickProp, disabled, isLoading, sx, ...props}: ICalendarButtonProps) => {
+
+
+const Button = ({children, onClickProp, disabled, isLoading, sx, ...props}: ICalendarButtonProps) => {
 	const onClick = () => {
 		if (onClickProp) {
 			onClickProp();
@@ -19,7 +16,7 @@ const CalendarButton = ({children, onClickProp, disabled, isLoading, sx, ...prop
 
 	return (
 		<div className="calendar-button">
-			<Button
+			<MuiButton
 				{...props}
 				sx={{
 					bgcolor: styleConfig.colors.secondary?.light,
@@ -35,7 +32,7 @@ const CalendarButton = ({children, onClickProp, disabled, isLoading, sx, ...prop
 				onClick={onClick}
 			>
 				{children}
-			</Button>
+			</MuiButton>
 			{isLoading &&
 				<CircularProgress
 					sx={{
@@ -52,4 +49,4 @@ const CalendarButton = ({children, onClickProp, disabled, isLoading, sx, ...prop
 	)
 };
 
-export default CalendarButton;
+export default Button;

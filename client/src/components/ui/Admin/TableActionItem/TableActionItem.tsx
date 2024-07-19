@@ -1,13 +1,11 @@
-import { CircularProgress } from "@mui/material";
 import "./TableActionItem.css";
-import { GridActionsCellItem } from "@mui/x-data-grid";
-import { GridActionsCellItemProps } from "@mui/x-data-grid";
 import styleConfig from "../../../../style.config";
+import { CircularProgress } from "@mui/material";
+import { GridActionsCellItem } from "@mui/x-data-grid";
 
-type ITableActionItemProps = GridActionsCellItemProps & {
-	itemReason?: string;
-	isLoading?: boolean;
-}
+import { ITableActionItemProps } from "../../../../types";
+
+
 
 const TableActionItem = ({itemReason = '', isLoading = false, ...props}: ITableActionItemProps) => {
 

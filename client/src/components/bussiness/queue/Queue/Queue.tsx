@@ -1,13 +1,17 @@
-import { useEffect, useMemo } from "react";
-import { IQueue, IUserFields } from "../../../../types";
-import Title from "../../../ui/Title/Title";
-import QueueList from "../QueueList/QueueList";
 import "./Queue.css";
+import { useEffect, useMemo } from "react";
+
+import Text from "../../../ui/Text/Text";
+import QueueList from "../QueueList/QueueList";
 import QueueTimer from "./QueueTimer";
-import { getISODate } from "../../calendar/utils";
-import { Skeleton } from "@mui/material";
+import Skeleton from "../../../ui/Skeleton/Skeleton";
+
 import { toast } from "sonner";
+
 import { useGetQueueQuery } from "../../../../http/mainApi";
+
+import { getISODate } from "../../../../helpers/utils";
+import { IQueue, IUserFields } from "../../../../types";
 
 const Queue = () => {
 
@@ -38,7 +42,7 @@ const Queue = () => {
 		return (
 			<>
 				<div className="queue">
-					<Skeleton 
+					<Skeleton
 						sx={{
 							alignSelf: "center",
 							borderRadius: "10px",
@@ -55,18 +59,18 @@ const Queue = () => {
 	if (!visibleList.length) {
 		return (
 			<div className="queue-null">
-				<Title variant="h2">
+				<Text font="h2">
 					Ещё никто не записался :)
-				</Title>
+				</Text>
 			</div>
 		)
 	}
 
 	return (
 		<div className="queue">
-			<Title variant="h2">
+			<Text font="h2">
 				<QueueTimer />
-			</Title>
+			</Text>
 			<QueueList list={visibleList} />
 		</div>
 	)

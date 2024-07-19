@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { UserService } from "../services/userService";
-import { tokenData, userData } from "../types";
-import { getQueryParamsArrayOrString } from "../utils";
+import UserService from "../services/userService";
+import { getQueryParams } from "../utils";
 
 class UserController {
 	userService: UserService;
@@ -10,17 +9,9 @@ class UserController {
 		this.userService = userService;
 	}
 
-	// Работа со списком пользователей
 	getAllUsers = async (req: Request, res: Response) => {
 		try {
-			const page = typeof req.query.page === 'string' ? parseInt(req.query.page) : -1;
-  		const limit = typeof req.query.limit === 'string' ? parseInt(req.query.limit) : -1;
-			const filterFields = getQueryParamsArrayOrString(req, 'filterField');
-			const filterValues = getQueryParamsArrayOrString(req, 'filterValue');
-			const sortFields = getQueryParamsArrayOrString(req, 'sortField');
-			const sorts = getQueryParamsArrayOrString(req, 'sort');
-			const selectFields = getQueryParamsArrayOrString(req, 'selectFields')
-			const users = await this.userService.getAllUsers({page, limit, filterFields, filterValues, sortFields, sorts, selectFields});
+			const users = await this.userService.getAllUsers(getQueryParams(req));
 			res.status(200).json(users);
 		} catch (error) {
 			res.status(500).json({error: (error as Error).message});
@@ -47,7 +38,6 @@ class UserController {
 		}
 	};
 
-	// Работа с одним пользователем
 	getUserById = async (req: Request, res: Response) => {
 		try {
 			const user = await this.userService.getUserByField("id", req.params.userId);
@@ -92,8 +82,7 @@ class UserController {
 			const userData = req.body;
 			const receivedData = await this.userService.checkUser(userData);
 			if (!(receivedData)) {
-				res.status(401).json({error: 'User data is incorrect'});
-				return;
+				return res.status(401).json({error: 'User data is incorrect'});
 			}
 			res.cookie('refreshToken', receivedData.refreshToken, {maxAge: 30 * 24 * 60 * 60 * 1000, httpOnly: true})
 			next(res.status(200).json({ message: 'Authenticated', ...receivedData }));
@@ -106,7 +95,7 @@ class UserController {
 		try {
 			const activationLink = req.params.link;
 			await this.userService.activateUser(activationLink);
-			return res.redirect("http://localhost:5173");
+			return res.redirect(process.env.CLIENT_URL || '');
 		} catch (error) {
 			res.status(500).json({error: (error as Error).message});
 		}
@@ -142,5 +131,3 @@ class UserController {
 };
 
 export default UserController;
-
-export type { UserController };

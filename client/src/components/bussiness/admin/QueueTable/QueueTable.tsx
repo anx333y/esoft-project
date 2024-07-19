@@ -1,11 +1,13 @@
-import { GridColDef, GridEventListener, GridFilterModel, GridRowEditStopReasons, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridSlots, GridSortModel, useGridApiRef } from "@mui/x-data-grid";
+import { GridColDef, GridRowId, GridRowModel, GridRowModes, GridRowModesModel, GridSlots, useGridApiRef } from "@mui/x-data-grid";
 import Table from "../../../ui/Admin/Table/Table";
 import { useAddQueueRowMutation, useChangeQueueRowMutation, useDeleteQueueRowMutation, useGetQueueQuery, useGetUsersQuery } from "../../../../http/mainApi";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Cancel, Delete, Edit, Save } from "@mui/icons-material";
 import TableActionItem from "../../../ui/Admin/TableActionItem/TableActionItem";
 import { toast } from "sonner";
-import EditToolbar from "../../../ui/Admin/EditToolbar/EditToolbar";
+import EditToolbar from "./EditToolbar";
+import AddArrayQueueDialog from "../AddArrayQueueDialog/AddArrayQueueDialog";
+import { handleFilterChange, handleRowEditStop, handleRowModesModelChange, handleSortModelChange } from "../../../../helpers/utils";
 
 const QueueTable = () => {
 	const apiRef = useGridApiRef();
@@ -18,6 +20,7 @@ const QueueTable = () => {
 	const [sortOptions, setSortOptions] = useState({});
 	const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 	const [editRow, setEditRow] = useState<GridRowId | null>(null);
+	const [isOpenDialog, setIsOpenDialog] = useState(false);
 
 	const { data, isSuccess, isLoading, isError, refetch } = useGetQueueQuery({
 		page: paginationModel.page + 1,
@@ -75,12 +78,6 @@ const QueueTable = () => {
 		})
 	}, [apiRef.current, data, isSuccess])
 
-	const handleRowEditStop: GridEventListener<'rowEditStop'> = (params, event) => {
-		if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-			event.defaultMuiPrevented = true;
-		}
-	};
-
 	const handleEditClick = (id: GridRowId) => () => {
 		setRowModesModel({ [id]: { mode: GridRowModes.Edit } });
 		setEditRow(id);
@@ -124,17 +121,19 @@ const QueueTable = () => {
 		return updatedRow;
 	};
 
-	const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-		setRowModesModel(newRowModesModel);
-	};
-
 	useEffect(() => {
 		if (changeQueueRowIsError || deleteQueueRowIsError || addQueueRowIsError) {
 			if (editRow) {
 				setRowModesModel({ [editRow]: { mode: GridRowModes.Edit } });
 			}
 			toast.error('Ошибка!', {
-				description: `Ошибка ${changeQueueRowIsError ? "редактирования" : deleteQueueRowIsError ? "удаления" : "добавления"} строки, попробуйте ещё раз`,
+				description: `Ошибка ${
+					changeQueueRowIsError
+						? "редактирования"
+						: deleteQueueRowIsError
+							? "удаления"
+							: "добавления"
+					} строки, попробуйте ещё раз`,
 			});
 		}
 	}, [changeQueueRowIsError, deleteQueueRowIsError]);
@@ -151,7 +150,13 @@ const QueueTable = () => {
 		if (changeQueueRowIsSuccess || deleteQueueRowIsSuccess || addQueueRowIsSuccess) {
 			changeQueueRowIsSuccess && setEditRow(null);
 			toast.success('Успех!', {
-				description: `Успешно ${changeQueueRowIsSuccess ? "отредактирована" : deleteQueueRowIsSuccess ? "удалена" : "добавлена"} строка`,
+				description: `Успешно ${
+					changeQueueRowIsSuccess
+						? "отредактирована"
+						: deleteQueueRowIsSuccess
+							? "удалена"
+							: "добавлена"
+						} строка`,
 			});
 		}
 	}, [changeQueueRowIsSuccess, deleteQueueRowIsSuccess, addQueueRowIsSuccess])
@@ -222,24 +227,6 @@ const QueueTable = () => {
 			}
 		}];
 
-	const handleFilterChange = useCallback((filterModel: GridFilterModel) => {
-		const filterInfo = filterModel.items[0] || null;
-		if (filterInfo && filterInfo.field && filterInfo.value) {
-			setFilterOptions({filterField: filterInfo.field, filterValue: filterInfo.value});
-		} else {
-			setFilterOptions({});
-		}
-	}, []);
-
-	const handleSortModelChange = useCallback((sortModel: GridSortModel) => {
-		const sortInfo = sortModel[0] || null;
-		if (sortInfo && sortInfo.field && sortInfo.sort) {
-			setSortOptions({sortField: sortInfo.field, sort: sortInfo.sort});
-		} else {
-			setSortOptions({});
-		}
-	}, []);
-
 	const rowCountRef = useRef(isSuccess ? data?.total : 0);
 
 	const rowCount = useMemo(() => {
@@ -250,6 +237,7 @@ const QueueTable = () => {
 	}, [data?.total]);
 
 	return (
+		<>
 		<div className="admin-queue-table">
 			<Table
 				apiRef={apiRef}
@@ -259,20 +247,27 @@ const QueueTable = () => {
 				loading={isLoading || usersIsLoading}
 				paginationModel={paginationModel}
 				onPaginationModelChange={setPaginationModel}
-				onFilterModelChange={handleFilterChange}
-				onSortModelChange={handleSortModelChange}
+				onFilterModelChange={handleFilterChange(setFilterOptions)}
+				onSortModelChange={handleSortModelChange(setSortOptions)}
 				rowModesModel={rowModesModel}
-				onRowModesModelChange={handleRowModesModelChange}
+				onRowModesModelChange={handleRowModesModelChange(setRowModesModel)}
 				onRowEditStop={handleRowEditStop}
 				processRowUpdate={processRowUpdate}
 				slots={{
 					toolbar: EditToolbar as GridSlots['toolbar'],
 				}}
 				slotProps={{
-					toolbar: { setRows, setRowModesModel, columns: {user_id: -1, queue_date: '', queue_time: '', status: 'free'} },
+					toolbar: {
+						setRows,
+						setRowModesModel,
+						setIsOpenDialog,
+						columns: {user_id: -1, queue_date: '', queue_time: '', status: 'free'}
+					},
 				}}
 			/>
 		</div>
+		<AddArrayQueueDialog open={isOpenDialog} setOpen={setIsOpenDialog} />
+		</>
 	)
 };
 

@@ -23,10 +23,6 @@ const getChipTheme = (
 	darkColor: string,
 	lightColor: string
 ): IFunReturn | undefined => {
-	// if (false) {
-	// 	return 'inactive-chip';
-	// }
-
 	let flag = false;
 	if (typeof(first) !== typeof(second)) {
 		return;
@@ -67,12 +63,11 @@ const getChipTheme = (
 	}
 };
 
-type ConditionalArrowFunction<R = void> = () => R;
 type IChipProps = {
 	value: string | number;
 	data?: IData;
 	mainData?: IData;
-	onClickProp: ConditionalArrowFunction;
+	onClickProp: () => void;
 	styles?: SxProps;
 	darkColor?: string;
 	lightColor?: string;

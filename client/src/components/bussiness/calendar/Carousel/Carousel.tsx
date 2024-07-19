@@ -1,43 +1,15 @@
 import './Carousel.css';
 import styleConfig from '../../../../style.config';
 import CarouselMui from 'react-material-ui-carousel';
+
 import CarouselItem from './CarouselItem';
+
 import { ICarouselProps } from '../../../../types';
-
-const sizes = {
-	s: {
-		width: '32px',
-		height: '32px'
-	},
-	m: {
-		width: '42px',
-		height: '42px'
-	},
-	l: {
-		width: '64px',
-		height: '64px'
-	},
-};
-
-const months = [
-	'Январь',
-	'Февраль',
-	'Март',
-	'Апрель',
-	'Май',
-	'Июнь',
-	'Июль',
-	'Август',
-	'Сентябрь',
-	'Октябрь',
-	'Ноябрь',
-	'Декабрь'
-];
+import { months } from '../../../../helpers/constants';
 
 const Carousel = ({panel, size = 'm'}: ICarouselProps) => {
 	const { month, year } = panel.panelMonthYear;
 
-	// console.log(month, year);
 	const handleChange = (isNext: boolean) => {
 		const tempDate = new Date(year, month, 1);
 		tempDate.setMonth(isNext ? month + 1 : month - 1);
@@ -60,8 +32,8 @@ const Carousel = ({panel, size = 'm'}: ICarouselProps) => {
 						style: {
 								backgroundColor: 'transparent',
 								color: '#282D35',
-								width: sizes[size].width,
-								height: sizes[size].height,
+								width: styleConfig.sizes[size].carouselItem.width,
+								height: styleConfig.sizes[size].carouselItem.height,
 								fontSize: styleConfig.sizes[size].chip.fontSize,
 								borderRadius: "10px",
 								margin: "0",
@@ -70,14 +42,14 @@ const Carousel = ({panel, size = 'm'}: ICarouselProps) => {
 				}}
 				navButtonsWrapperProps={{
 						style: {
-								height: sizes[size].height
+								height: styleConfig.sizes[size].carouselItem.height
 						}
 				}}
 				navButtonsAlwaysVisible={true}
 				autoPlay={false}
 				duration={0}
 				indicators={false}
-				height={sizes[size].height}
+				height={styleConfig.sizes[size].carouselItem.height}
 				className='carousel-mui'
 				next={() => handleChange(true)}
 				prev={() => handleChange(false)}

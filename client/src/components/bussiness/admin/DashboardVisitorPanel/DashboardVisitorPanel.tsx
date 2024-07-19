@@ -1,14 +1,10 @@
+import "./DashboardVisitorPanel.css";
 import styleConfig from "../../../../style.config";
-import { IQueue } from "../../../../types";
+
 import DashboardButton from "../../../ui/Admin/Dashboard/Button/Button";
 import ExplicitText from "../../../ui/Admin/Dashboard/ExplicitText/ExplicitText";
-import "./DashboardVisitorPanel.css";
 
-type IDashboardVisitorPanelProps = {
-	row: IQueue;
-	handleMissedClick: () => void;
-	handlePassedClick: () => void;
-}
+import { IDashboardVisitorPanelProps } from "../../../../types";
 
 const DashboardVisitorPanel = ({row, handleMissedClick, handlePassedClick}: IDashboardVisitorPanelProps) => {
 

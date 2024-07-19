@@ -27,12 +27,10 @@ const calendarSlice = createSlice({
 				return;
 			}
 			
-			console.log('actionRow:', action.payload)
 			if (!action.payload) {
 				return;
 			}
 			const actionRow = action.payload;
-			console.log('actionRow:', action.payload)
 			const index = state.data?.findIndex(row => row.id === actionRow.id);
 			if (!index || index === -1) {
 				return;

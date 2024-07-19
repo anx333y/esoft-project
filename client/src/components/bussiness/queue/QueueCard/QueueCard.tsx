@@ -1,7 +1,8 @@
-import styleConfig from "../../../../style.config";
-import { IQueueCardProps } from "../../../../types";
-import { getPlusTime } from "../../calendar/utils";
 import "./QueueCard.css";
+import styleConfig from "../../../../style.config";
+
+import { IQueueCardProps } from "../../../../types";
+import { getPlusTime } from "../../../../helpers/utils";
 
 const QueueCard = ({title = '', time = '', index = 0, forLoading = false}: IQueueCardProps) => {
 	if (forLoading) {

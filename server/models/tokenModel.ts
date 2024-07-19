@@ -1,23 +1,10 @@
-import knex from "knex";
-import dbConfig from "../config/db";
+import knexPool from "../config/db";
 import { tokenData } from "../types";
 
-const knexPool = knex({
-	client: dbConfig.client,
-	connection: {
-		...dbConfig.connection
-	},
-	pool: {
-		min: dbConfig.pool.min,
-		max: dbConfig.pool.max,
-		idleTimeoutMillis: dbConfig.pool.idleTimeoutMillis
-	}
-});
 
 class TokenModel {
 	async getAll() {
-		const query = knexPool
-			.from("tokens");
+		const query = knexPool.from("tokens");
 		const rows = await query;
 		return rows;
 	};
@@ -58,5 +45,3 @@ class TokenModel {
 };
 
 export default TokenModel;
-
-// export type { TokenModel };
